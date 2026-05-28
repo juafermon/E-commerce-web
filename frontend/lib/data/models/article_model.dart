@@ -1,3 +1,6 @@
+// article_model.dart
+// Este modelo representa un artículo en la aplicación, con sus propiedades y un método para convertir 
+// el JSON recibido de FastAPI a un objeto de Dart.
 class ArticleModel {
   final int id;
   final String name;

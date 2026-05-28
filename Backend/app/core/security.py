@@ -1,4 +1,7 @@
 # app/core/security.py
+# Este módulo centraliza la lógica de seguridad, incluyendo:
+# - Hashing de contraseñas con bcrypt nativo.
+
 import bcrypt
 from datetime import datetime, timedelta
 from jose import jwt

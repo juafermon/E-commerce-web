@@ -1,3 +1,7 @@
+// order_service.dart
+// Este servicio se encarga de manejar la lógica de creación de órdenes, incluyendo la comunicación con el backend y el manejo del token JWT para autenticación.
+// Importamos las dependencias necesarias: Dio para las peticiones HTTP, FlutterSecureStorage para manejar el almacenamiento seguro del token JWT, y CartProvider para acceder a los artículos del carrito.
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'cart_provider.dart';

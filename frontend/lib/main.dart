@@ -1,5 +1,7 @@
 // lib/main.dart
-// lib/main.dart
+// Punto de entrada de la aplicación Flutter para la tienda virtual
+// Aquí se configura el MaterialApp, las rutas y se inyecta el Carrito de Compras a las pantallas que lo necesitan.
+
 import 'package:flutter/material.dart';
 import 'ui/screens/login_screen.dart';
 import 'ui/screens/catalog_screen.dart';

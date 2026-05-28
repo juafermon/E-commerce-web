@@ -1,4 +1,5 @@
 # app/routers/orders.py
+# Este archivo define los endpoints relacionados con las órdenes y pedidos, incluyendo la creación de pedidos a partir del carrito, la consulta del historial de compras y la actualización del estado de las órdenes.
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 

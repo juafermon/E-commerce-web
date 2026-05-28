@@ -1,3 +1,7 @@
+// lib/ui/screens/cart_screen.dart
+// Esta pantalla muestra el contenido del carrito de compras del usuario. Permite revisar los artículos añadidos, modificar las cantidades, eliminar productos y proceder al checkout. Al confirmar la compra, se envía la información al backend para crear una orden en Supabase, y se maneja la respuesta para mostrar mensajes de éxito o error al usuario.
+// Importamos las dependencias necesarias: Flutter Material para los widgets, CartProvider para manejar el estado del carrito, y OrderService para interactuar con el backend al momento de realizar la compra.
+
 import 'package:flutter/material.dart';
 import '../../data/services/cart_provider.dart';
 import '../../data/services/order_service.dart';

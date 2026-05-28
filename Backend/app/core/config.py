@@ -1,4 +1,6 @@
 # app/core/config.py
+# Este módulo centraliza la configuración de la aplicación, cargando variables de entorno y definiendo parámetros globales.
+
 import os
 from dotenv import load_dotenv
 

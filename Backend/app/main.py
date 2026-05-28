@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from Backend.app.core.config import settings
-from Backend.app.routers import auth, articles, orders
+from Backend.app.routers import auth, articles, orders, categories
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(articles.router)
 app.include_router(orders.router)
+app.include_router(categories.router)
 
 @app.get("/", tags=["General"])
 def health_check():

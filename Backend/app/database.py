@@ -1,4 +1,5 @@
 # app/database.py
+# Este archivo define la conexión a la base de datos Supabase utilizando psycopg2, y proporciona una función de dependencia para inyectar el cursor en los endpoints de FastAPI.
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager

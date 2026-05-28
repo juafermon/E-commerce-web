@@ -1,4 +1,6 @@
 # app/crud/crud_user.py
+# Este módulo maneja la lógica de negocio relacionada con los usuarios, incluyendo:
+# - Registro de nuevos usuarios con validación de datos y hashing de contraseñas.
 from Backend.app import schemas
 
 def get_user_by_username(db, username: str):

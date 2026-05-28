@@ -1,3 +1,7 @@
+// auth_service.dart
+// Este servicio se encarga de manejar la autenticación con el backend, 
+// incluyendo el inicio de sesión, almacenamiento seguro del token JWT y cierre de sesión.
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/auth_model.dart';
