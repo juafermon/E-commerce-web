@@ -1,4 +1,6 @@
 # app/routers/articles.py
+# Este módulo define los endpoints relacionados con el catálogo de artículos de la tienda virtual.
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 

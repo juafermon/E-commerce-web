@@ -1,4 +1,6 @@
 # app/routers/auth.py
+# Este módulo define los endpoints relacionados con la autenticación de usuarios en la tienda virtual.
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta

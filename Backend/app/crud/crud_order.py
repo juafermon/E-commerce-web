@@ -1,4 +1,6 @@
 # app/crud/crud_order.py
+# Este módulo maneja la lógica de negocio relacionada con las órdenes de compra, incluyendo:
+# - Creación de órdenes con validación de stock y cálculo de precios.
 from fastapi import HTTPException, status
 from Backend.app import schemas
 

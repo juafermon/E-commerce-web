@@ -1,3 +1,6 @@
+// Este servicio se encarga de hacer la solicitud HTTP al backend para obtener el catálogo de artículos.
+// Asegúrate de que el backend esté corriendo en http://localhost:8000/ para que esta URL funcione correctamente.
+
 // lib/data/services/catalog_service.dart
 import 'package:dio/dio.dart';
 import '../models/article_model.dart';

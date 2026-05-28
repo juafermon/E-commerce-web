@@ -1,4 +1,6 @@
 # app/schemas.py
+# Este módulo define los esquemas de datos (Pydantic models) que se utilizan para validar y estructurar la información que entra y sale de la API.
+# Incluye esquemas para usuarios, autenticación, artículos, pedidos y categorías.
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
@@ -83,3 +85,10 @@ class OrderResponse(BaseModel):
         
 class OrderStatusUpdate(BaseModel):
     status: str = Field(..., description="Estados válidos: pending, paid, shipped, delivered, cancelled")
+    
+class CategoryOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        from_attributes = True  # Permite mapear los datos directamente desde la base de datos

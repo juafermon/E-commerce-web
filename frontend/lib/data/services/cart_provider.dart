@@ -1,3 +1,5 @@
+// Este archivo define el CartProvider, que es un servicio de estado para manejar el carrito de compras en la aplicación.
+// El CartProvider utiliza ChangeNotifier para notificar a la interfaz gráfica sobre cambios en el estado del carrito, como agregar o eliminar productos, o actualizar las cantidades.
 import 'package:flutter/material.dart';
 import '../models/article_model.dart';
 

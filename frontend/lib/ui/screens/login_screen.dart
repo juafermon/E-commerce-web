@@ -1,3 +1,6 @@
+// Pantalla de Login para la aplicación de tienda virtual
+// Esta pantalla permite a los usuarios ingresar sus credenciales para acceder a la tienda.
+
 import 'package:flutter/material.dart';
 import '../../data/services/auth_service.dart';
 

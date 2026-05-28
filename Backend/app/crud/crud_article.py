@@ -1,4 +1,6 @@
 # app/crud/crud_article.py
+# Este archivo define las funciones CRUD para manejar los artículos en la base de datos de Supabase.
+# Estas funciones serán utilizadas por los endpoints de FastAPI para interactuar con la base de datos
 from Backend.app import schemas
 
 def get_articles(db, skip: int = 0, limit: int = 100):
