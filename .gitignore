@@ -1,4 +1,12 @@
 # Created by venv; see https://docs.python.org/3/library/venv.html
 
-.sellingview
+.sellingvenv
 .env
+__pycache__/
+
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
