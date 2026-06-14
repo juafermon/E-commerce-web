@@ -6,12 +6,15 @@ from typing import Optional, List
 from datetime import datetime
 
 # --- SCHEMAS DE AUTENTICACIÓN ---
-
 class UserBase(BaseModel):
-    username: str = Field(..., description="Nombre de usuario único para la tienda")
+    username: str = Field(..., max_length=15, description="Nombre de usuario único para la tienda")
+    email: str = Field(..., max_length=30, description="Correo electrónico del usuario")
+    address: str = Field(..., max_length=100, description="Dirección de envío/residencia")
+    id_type: str = Field(..., description="Tipo de documento: CC, CE, NIT, Pasaporte")
+    doc_number: str = Field(..., max_length=15, description="Número de identificación (Solo dígitos)")
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6, description="Contraseña de acceso")
+    password: str = Field(..., min_length=6, max_length=20, description="Contraseña de acceso")
 
 class User(UserBase):
     id: int
