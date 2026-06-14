@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.storefront_outlined, size: 64, color: Colors.blue),
+                //const Icon(Icons.storefront_outlined, size: 64, color: Colors.blue),
                 const SizedBox(height: 16),
                 const Text(
                   'Ingresa a tu Cuenta',
