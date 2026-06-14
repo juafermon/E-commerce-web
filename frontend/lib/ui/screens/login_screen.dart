@@ -1,6 +1,6 @@
 // Pantalla de Login para la aplicación de tienda virtual
 // Esta pantalla permite a los usuarios ingresar sus credenciales para acceder a la tienda.
-
+// lib/ui/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import '../../data/services/auth_service.dart';
 
@@ -12,7 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Controladores para capturar el texto de los inputs
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -21,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false; // Para mostrar un círculo de carga
   bool _obscureText = true; // Para ocultar/mostrar la contraseña
 
-  // Función que se ejecuta al presionar el botón de ingresar
   void _handleLogin() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
@@ -38,13 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // Llamamos al servicio que conecta con FastAPI
       bool success = await _authService.login(username, password);
 
       if (!mounted) return; // Verificar que el widget sigue montado
 
       if (success) {
-        // ¡Login Exitoso! El token ya se guardó en el almacenamiento seguro.
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('¡Bienvenido a la tienda!'),
@@ -55,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Aquí rediriges al catálogo
         Navigator.pushReplacementNamed(context, '/catalog');
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Credenciales incorrectas'),
@@ -72,9 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
