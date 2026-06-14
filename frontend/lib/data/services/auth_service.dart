@@ -53,4 +53,41 @@ class AuthService {
   Future<void> logout() async {
     await _storage.delete(key: 'jwt_token');
   }
+  
+  Future<bool> register({
+    required String username,
+    required String password,
+    required String email,
+    required String address,
+    required String id_type,
+    required String doc_number,
+  }) async {
+    final String registerUrl = "http://localhost:8000/auth/register";
+
+    try {
+      final Map<String, dynamic> registerData = {
+        'username': username,
+        'password': password,
+        'email': email,
+        'address': address,
+        'id_type': id_type,
+        'doc_number': doc_number,
+      };
+
+      final response = await _dio.post(
+        registerUrl, 
+        data: registerData,
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+
+      return response.statusCode == 201;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // Captura excepciones de Username duplicado o Documento duplicado lanzadas por la API
+        throw Exception(e.response?.data['detail'] ?? 'Error en el proceso de registro');
+      }
+      throw Exception('Error de conexión con el servidor');
+    }
+  }
+
 }

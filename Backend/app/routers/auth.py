@@ -22,11 +22,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 @router.post("/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def register_client(user: schemas.UserCreate, db = Depends(get_db)):
-    """
-    Registro público de clientes.
-    Cualquier usuario puede registrarse libremente sin necesidad de tokens.
-    """
-    # 1. Verificar si el usuario ya existe
+    """Registro público de clientes con validación de Username y Documento Único"""
+    # 1. Verificar si el username ya existe
     db_user = crud_user.get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(
@@ -34,11 +31,18 @@ def register_client(user: schemas.UserCreate, db = Depends(get_db)):
             detail="El nombre de usuario ya está registrado en la tienda."
         )
     
-    # 2. Generar hash de la contraseña de forma segura
-    hashed_pwd = security.get_password_hash(user.password)
+    # 2. Verificar si el documento de identidad ya existe
+    db_doc = crud_user.get_user_by_document(db, doc_number=user.doc_number)
+    if db_doc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El número de documento de identidad ya se encuentra registrado."
+        )
     
-    # 3. Guardar en Supabase utilizando la capa CRUD
-    return crud_user.create_user(db, user=user, hashed_password=hashed_pwd)
+    # 3. Proceder al hashing y guardado (asumiendo que manejas el helper 'security.get_password_hash')
+    from Backend.app.core import security
+    hashed_password = security.get_password_hash(user.password)
+    return crud_user.create_user(db, user=user, hashed_password=hashed_password)
 
 
 @router.post("/login", response_model=schemas.Token)

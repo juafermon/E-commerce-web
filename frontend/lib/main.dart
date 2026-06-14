@@ -7,6 +7,7 @@ import 'ui/screens/login_screen.dart';
 import 'ui/screens/catalog_screen.dart';
 import 'ui/screens/cart_screen.dart';
 import 'data/services/cart_provider.dart'; // <-- Importación obligatoria
+import 'ui/screens/register_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/catalog',
       routes: {
         '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
         '/catalog': (context) => CatalogScreen(cartProvider: _globalCart), // <-- Inyectamos aquí
         '/cart': (context) => CartScreen(cartProvider: _globalCart),            // <-- Inyectamos aquí
       },
