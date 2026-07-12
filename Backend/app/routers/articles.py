@@ -1,6 +1,7 @@
 # app/routers/articles.py
 # Este módulo define los endpoints relacionados con el catálogo de artículos de la tienda virtual.
 
+# pyrefly: ignore [missing-import]
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 
@@ -21,6 +22,19 @@ def list_articles(skip: int = 0, limit: int = 100, db = Depends(get_db)):
     Cualquier cliente (registrado o no) puede ver la lista de artículos de la tienda.
     """
     return crud_article.get_articles(db, skip=skip, limit=limit)
+
+
+@router.get("/{article_id}", response_model=schemas.Article)
+def get_article(article_id: int, db = Depends(get_db)):
+    """
+    Endpoint Público.
+    Obtiene los detalles (incluyendo stock actual) de un artículo específico por su ID.
+    """
+    db_article = crud_article.get_article_by_id(db, article_id=article_id)
+    if not db_article:
+        raise HTTPException(status_code=404, detail="El artículo solicitado no existe.")
+    return db_article
+
 
 
 @router.post("/", response_model=schemas.Article, status_code=status.HTTP_201_CREATED)

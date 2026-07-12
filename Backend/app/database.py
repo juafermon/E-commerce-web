@@ -2,13 +2,18 @@
 # Este archivo define la conexión a la base de datos Supabase utilizando psycopg2, y proporciona una función de dependencia para inyectar el cursor en los endpoints de FastAPI.
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from psycopg2.pool import ThreadedConnectionPool
 from contextlib import contextmanager
 from Backend.app.core.config import settings
 
+# Inicializamos el Pool de Conexiones al arrancar el backend.
+# Mantiene conexiones persistentes listas para usar, evitando el retardo de conexión física (handshake TCP/SSL) en cada petición.
+db_pool = ThreadedConnectionPool(1, 10, settings.DATABASE_URL)
+
 @contextmanager
 def get_db_connection():
-    """Abre y cierra la conexión física con Supabase de forma segura"""
-    conn = psycopg2.connect(settings.DATABASE_URL) # <-- Usamos la variable centralizada
+    """Obtiene una conexión reutilizable del Pool de Conexiones en lugar de abrir una nueva"""
+    conn = db_pool.getconn()
     try:
         yield conn
         conn.commit()
@@ -16,7 +21,7 @@ def get_db_connection():
         conn.rollback()
         raise e
     finally:
-        conn.close()
+        db_pool.putconn(conn) # Devuelve la conexión al pool para su reutilización
 
 def get_db():
     """Dependencia para inyectar el cursor en los endpoints de FastAPI"""
