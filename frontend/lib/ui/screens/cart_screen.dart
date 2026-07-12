@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import '../../data/services/cart_provider.dart';
 import '../../data/services/order_service.dart';
+import '../../data/services/catalog_service.dart';
 
 class CartScreen extends StatefulWidget {
   final CartProvider cartProvider; // Recibe el estado global del carrito
@@ -32,23 +33,29 @@ class _CartScreenState extends State<CartScreen> {
     setState(() => _isProcessing = true);
 
     try {
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
       // Intentamos disparar la transacción en Supabase a través del Backend
       bool success = await _orderService.createOrder(widget.cartProvider.items, address);
 
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('¡Pedido realizado con éxito! 📦'), backgroundColor: Colors.green),
         );
         widget.cartProvider.clearCart(); // Vaciamos el carrito local
         _addressController.clear();
-        Navigator.pop(context); // Regresa al catálogo
+        navigator.pop(); // Regresa al catálogo
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+        );
+      }
     } finally {
-      setState(() => _isProcessing = false);
+      if (mounted) {
+        setState(() => _isProcessing = false);
+      }
     }
   }
 
@@ -84,7 +91,32 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.add_circle_outline, color: Colors.green),
-                              onPressed: () => setState(() => cart.addArticle(item.article)),
+                              onPressed: () async {
+                                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                                try {
+                                  bool success = await cart.addArticleWithStockCheck(
+                                    item.article,
+                                    CatalogService(),
+                                  );
+                                  if (success) {
+                                    setState(() {});
+                                  } else {
+                                    scaffoldMessenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text('No hay más stock disponible para ${item.article.name}'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  scaffoldMessenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error de conexión o red: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),

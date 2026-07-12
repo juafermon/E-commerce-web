@@ -2,6 +2,7 @@
 // El CartProvider utiliza ChangeNotifier para notificar a la interfaz gráfica sobre cambios en el estado del carrito, como agregar o eliminar productos, o actualizar las cantidades.
 import 'package:flutter/material.dart';
 import '../models/article_model.dart';
+import 'catalog_service.dart';
 
 // Estructura interna para representar un elemento dentro del carrito
 class CartItem {
@@ -38,6 +39,42 @@ class CartProvider extends ChangeNotifier {
     }
     _items.add(CartItem(article: article));
     notifyListeners();
+  }
+
+  // Agrega un producto verificando primero el stock en tiempo real en el servidor
+  Future<bool> addArticleWithStockCheck(ArticleModel article, CatalogService catalogService) async {
+    try {
+      final latestArticle = await catalogService.fetchArticleById(article.id);
+      
+      int localQuantity = 0;
+      CartItem? existingItem;
+      for (var item in _items) {
+        if (item.article.id == article.id) {
+          existingItem = item;
+          localQuantity = item.quantity;
+          break;
+        }
+      }
+
+      if (!latestArticle.isAvailable || localQuantity >= latestArticle.stock) {
+        // No hay suficiente stock en el servidor para incrementar la cantidad o no está disponible
+        return false;
+      }
+
+      if (existingItem != null) {
+        // Actualizamos el artículo con los datos más recientes del backend e incrementamos
+        _items[_items.indexOf(existingItem)] = CartItem(
+          article: latestArticle,
+          quantity: localQuantity + 1,
+        );
+      } else {
+        _items.add(CartItem(article: latestArticle, quantity: 1));
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   // Remueve o disminuye la cantidad de un producto
