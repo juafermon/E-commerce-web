@@ -9,13 +9,22 @@ class CategoryService {
   final Dio _dio = Dio();
   final String _baseUrl = "http://localhost:8000/categories/"; 
 
-  Future<List<CategoryModel>> fetchCategories() async {
+  // Variable de clase para almacenar la lista de categorías en memoria.
+  static List<CategoryModel>? _cache;
+
+  Future<List<CategoryModel>> fetchCategories({bool forceRefresh = false}) async {
+    // Si la caché tiene datos y no se requiere forzar refresco, los retornamos de inmediato.
+    if (_cache != null && !forceRefresh) {
+      return _cache!;
+    }
+
     try {
       final response = await _dio.get(_baseUrl);
       
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
-        return data.map((json) => CategoryModel.fromJson(json)).toList();
+        _cache = data.map((json) => CategoryModel.fromJson(json)).toList();
+        return _cache!;
       } else {
         throw Exception("Error al cargar las categorías");
       }
