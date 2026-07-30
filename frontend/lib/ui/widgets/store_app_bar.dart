@@ -65,13 +65,13 @@ class StoreAppBar extends StatelessWidget implements PreferredSizeWidget {
           TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.local_offer_outlined, size: 18, color: Colors.black54),
-            label: const Text('Descuentos', style: TextStyle(color: Colors.black87)),
+            label: const Text('Posible bot Descuentos', style: TextStyle(color: Colors.black87)),
           ),
           const SizedBox(width: 8),
           TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.trending_up, size: 18, color: Colors.black54),
-            label: const Text('Más Vendidos', style: TextStyle(color: Colors.black87)),
+            label: const Text('Posible botMás Vendidos', style: TextStyle(color: Colors.black87)),
           ),
           const SizedBox(width: 16),
         ],

@@ -41,6 +41,7 @@ class ArticleBase(BaseModel):
     price: float = Field(..., gt=0, description="El precio debe ser mayor a cero")
     stock: int = Field(..., ge=0, description="El inventario no puede ser negativo")
     category: Optional[str] = None
+    image_urls: List[str] = []
     image_url: Optional[str] = None
 
 class ArticleCreate(ArticleBase):

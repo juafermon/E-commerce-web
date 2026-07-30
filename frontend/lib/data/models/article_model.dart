@@ -9,6 +9,7 @@ class ArticleModel {
   final int stock;
   final String? category;
   final String? imageUrl;
+  final List<String> imageUrls;
   final bool isAvailable;
 
   ArticleModel({
@@ -19,11 +20,17 @@ class ArticleModel {
     required this.stock,
     this.category,
     this.imageUrl,
+    required this.imageUrls,
     required this.isAvailable,
   });
 
   // Transforma el JSON que viene de FastAPI a un Objeto de Dart
   factory ArticleModel.fromJson(Map<String, dynamic> json) {
+    var urlsFromJson = json['image_urls'];
+    List<String> urlsList = [];
+    if (urlsFromJson != null) {
+      urlsList = List<String>.from(urlsFromJson);
+    }
     return ArticleModel(
       id: json['id'],
       name: json['name'],
@@ -32,6 +39,7 @@ class ArticleModel {
       stock: json['stock'],
       category: json['category'],
       imageUrl: json['image_url'],
+      imageUrls: urlsList,
       isAvailable: json['is_available'],
     );
   }

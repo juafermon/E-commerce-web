@@ -30,12 +30,23 @@ class _CatalogScreenState extends State<CatalogScreen> {
   bool _hasMore = true;
   int _skip = 0;
   static const int _limit = 12; // Carga de 12 en 12 productos
+  bool _isAdmin = false;
 
   @override
   void initState() {
     super.initState();
+    _checkAdminRole();
     _loadMoreArticles();
     _scrollController.addListener(_onScroll);
+  }
+
+  Future<void> _checkAdminRole() async {
+    final role = await _authService.getUserRole();
+    if (mounted) {
+      setState(() {
+        _isAdmin = role == 'admin';
+      });
+    }
   }
 
   @override
@@ -117,7 +128,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
         cartProvider: widget.cartProvider,
         authService: _authService,
         isWeb: isWeb,
-        onSessionChanged: () => setState(() {}),
+        onSessionChanged: () {
+          _checkAdminRole();
+          setState(() {});
+        },
       ),
 
       body: Row(
@@ -187,6 +201,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
           ),
         ],
       ),
+      floatingActionButton: _isAdmin
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.pushNamed(context, '/add-article').then((_) {
+                  _loadMoreArticles(refresh: true);
+                });
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Nuevo Artículo'),
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            )
+          : null,
     );
   }
 }

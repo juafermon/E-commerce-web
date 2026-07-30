@@ -78,17 +78,84 @@ class _CartScreenState extends State<CartScreen> {
                     itemCount: cart.items.length,
                     itemBuilder: (context, index) {
                       final item = cart.items[index];
+                      
+                      // Controlador local para el campo de texto numérico de esta fila
+                      final TextEditingController quantityController = 
+                          TextEditingController(text: item.quantity.toString());
+
                       return ListTile(
                         leading: const Icon(Icons.shopping_bag_outlined, color: Colors.blue),
                         title: Text(item.article.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text('Cant: ${item.quantity} x \$${item.article.price.toStringAsFixed(0)}'),
+                        subtitle: Text('\$${item.article.price.toStringAsFixed(0)} c/u'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            // 1. Botón de decrementar (-)
                             IconButton(
                               icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                              onPressed: () => setState(() => cart.removeArticle(item.article.id)),
+                              onPressed: () {
+                                if (item.quantity > 1) {
+                                  setState(() {
+                                    cart.removeArticle(item.article.id);
+                                    quantityController.text = item.quantity.toString();
+                                  });
+                                }
+                              },
                             ),
+
+                            // 2. Campo de cantidad manual editable
+                            SizedBox(
+                              width: 45,
+                              height: 32,
+                              child: TextFormField(
+                                controller: quantityController,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.zero,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                    borderSide: BorderSide(color: Colors.grey[300]!),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                    borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+                                  ),
+                                ),
+                                onFieldSubmitted: (value) {
+                                  final int? newQty = int.tryParse(value);
+
+                                  if (newQty == null || newQty < 1) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('La cantidad mínima es 1')),
+                                    );
+                                    setState(() {
+                                      quantityController.text = item.quantity.toString();
+                                    });
+                                    return;
+                                  }
+
+                                  if (newQty > item.article.stock) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Stock máximo disponible: ${item.article.stock}')),
+                                    );
+                                    setState(() {
+                                      quantityController.text = item.quantity.toString();
+                                    });
+                                    return;
+                                  }
+
+                                  // Si pasa las validaciones, asignamos la cantidad manual directamente
+                                  setState(() {
+                                    item.quantity = newQty;
+                                    cart.notifyListeners(); // Actualiza el total de la pantalla
+                                  });
+                                },
+                              ),
+                            ),
+
+                            // 3. Botón de incrementar (+)
                             IconButton(
                               icon: const Icon(Icons.add_circle_outline, color: Colors.green),
                               onPressed: () async {
@@ -99,7 +166,9 @@ class _CartScreenState extends State<CartScreen> {
                                     CatalogService(),
                                   );
                                   if (success) {
-                                    setState(() {});
+                                    setState(() {
+                                      quantityController.text = item.quantity.toString();
+                                    });
                                   } else {
                                     scaffoldMessenger.showSnackBar(
                                       SnackBar(
@@ -116,6 +185,24 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                   );
                                 }
+                              },
+                            ),
+                            
+                            const SizedBox(width: 4),
+                            const VerticalDivider(width: 1, indent: 10, endIndent: 10),
+                            
+                            // 4. Botón para remover por completo del carrito
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                              onPressed: () {
+                                setState(() {
+                                  // Remueve de raíz el artículo usando el id
+                                  cart.items.removeWhere((i) => i.article.id == item.article.id);
+                                  cart.notifyListeners();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('${item.article.name} eliminado')),
+                                );
                               },
                             ),
                           ],

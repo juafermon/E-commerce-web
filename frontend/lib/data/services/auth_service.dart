@@ -2,6 +2,7 @@
 // Este servicio se encarga de manejar la autenticación con el backend, 
 // incluyendo el inicio de sesión, almacenamiento seguro del token JWT y cierre de sesión.
 
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/auth_model.dart';
@@ -47,6 +48,23 @@ class AuthService {
   /// Recupera el token guardado para saber si el usuario ya está logueado
   Future<String?> getToken() async {
     return await _storage.read(key: 'jwt_token');
+  }
+
+  /// Recupera el rol del usuario decodificando el token JWT guardado
+  Future<String?> getUserRole() async {
+    String? token = await getToken();
+    if (token == null) return null;
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = parts[1];
+      final normalized = base64Url.normalize(payload);
+      final resp = utf8.decode(base64Url.decode(normalized));
+      final decoded = json.decode(resp) as Map<String, dynamic>;
+      return decoded['role'] as String?;
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Borra el token (Cerrar Sesión)
