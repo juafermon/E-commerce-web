@@ -1,1 +1,10 @@
 pip install fastapi "uvicorn[standard]" psycopg2-binary "python-jose[cryptography]" bcrypt passlib python-dotenv python-multipart
+fastapi
+uvicorn[standard]
+psycopg2-binary
+python-jose[cryptography]
+bcrypt
+passlib
+python-dotenv
+python-multipart
+supabase
