@@ -9,10 +9,10 @@ class CategorySidebar extends StatefulWidget {
   final ValueChanged<String> onCategorySelected;
 
   const CategorySidebar({
-    Key? key,
+    super.key,
     required this.selectedCategory,
     required this.onCategorySelected,
-  }) : super(key: key);
+  });
 
   @override
   State<CategorySidebar> createState() => _CategorySidebarState();
@@ -83,7 +83,7 @@ class _CategorySidebarState extends State<CategorySidebar> {
                     onTap: () => widget.onCategorySelected(category),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           );
         },

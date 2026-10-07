@@ -4,6 +4,7 @@ import '../../data/models/article_model.dart';
 import '../../data/services/catalog_service.dart';
 import '../../data/services/auth_service.dart';
 import '../../data/services/cart_provider.dart';
+import '../../data/services/wishlist_provider.dart';
 
 // NUESTROS TRES COMPONENTES REUTILIZABLES
 import '../widgets/category_sidebar.dart';
@@ -12,7 +13,12 @@ import '../widgets/store_app_bar.dart'; // <-- Importamos el nuevo AppBar
 
 class CatalogScreen extends StatefulWidget {
   final CartProvider cartProvider;
-  const CatalogScreen({Key? key, required this.cartProvider}) : super(key: key);
+  final WishlistProvider wishlistProvider;
+  const CatalogScreen({
+    super.key,
+    required this.cartProvider,
+    required this.wishlistProvider,
+  });
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
@@ -126,6 +132,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       // El AppBar resumido
       appBar: StoreAppBar(
         cartProvider: widget.cartProvider,
+        wishlistProvider: widget.wishlistProvider,
         authService: _authService,
         isWeb: isWeb,
         onSessionChanged: () {
@@ -176,6 +183,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 delegate: SliverChildBuilderDelegate(
                                   (context, index) {
                                     return ProductCard(
+                                      key: ValueKey('product_${filteredArticles[index].id}'),
                                       article: filteredArticles[index],
                                       cartProvider: widget.cartProvider,
                                       authService: _authService,

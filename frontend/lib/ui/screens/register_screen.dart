@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../data/services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -50,25 +50,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = true);
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     try {
-      // Invocación limpia vinculando los controladores al servicio actualizado
       bool success = await _authService.register(
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         email: _emailController.text.trim(),
         address: _addressController.text.trim(),
-        id_type: _selectedDocType,
-        doc_number: _documentController.text.trim(),
+        idType: _selectedDocType,
+        docNumber: _documentController.text.trim(),
       );
 
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(content: Text('¡Registro exitoso! Ya puedes iniciar sesión.'), backgroundColor: Colors.green),
         );
-        Navigator.pushReplacementNamed(context, '/login');
+        navigator.pushReplacementNamed('/login');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
       );
     } finally {
@@ -117,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Expanded(
                         flex: 2,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedDocType,
+                          initialValue: _selectedDocType,
                           decoration: const InputDecoration(
                             labelText: 'Tipo',
                             border: OutlineInputBorder(),
