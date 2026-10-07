@@ -10,7 +10,7 @@ import '../../data/services/catalog_service.dart';
 class CartScreen extends StatefulWidget {
   final CartProvider cartProvider; // Recibe el estado global del carrito
 
-  const CartScreen({Key? key, required this.cartProvider}) : super(key: key);
+  const CartScreen({super.key, required this.cartProvider});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -147,10 +147,8 @@ class _CartScreenState extends State<CartScreen> {
                                   }
 
                                   // Si pasa las validaciones, asignamos la cantidad manual directamente
-                                  setState(() {
-                                    item.quantity = newQty;
-                                    cart.notifyListeners(); // Actualiza el total de la pantalla
-                                  });
+                                  cart.setItemQuantity(item.article.id, newQty);
+                                  setState(() {});
                                 },
                               ),
                             ),
@@ -195,11 +193,8 @@ class _CartScreenState extends State<CartScreen> {
                             IconButton(
                               icon: const Icon(Icons.delete_outline, color: Colors.grey),
                               onPressed: () {
-                                setState(() {
-                                  // Remueve de raíz el artículo usando el id
-                                  cart.items.removeWhere((i) => i.article.id == item.article.id);
-                                  cart.notifyListeners();
-                                });
+                                cart.removeItem(item.article.id);
+                                setState(() {});
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('${item.article.name} eliminado')),
                                 );

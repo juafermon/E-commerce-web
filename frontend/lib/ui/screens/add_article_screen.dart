@@ -1,14 +1,10 @@
-// lib/ui/screens/add_article_screen.dart
-import 'dart:convert';
-import 'dart:html' as html;
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../data/services/auth_service.dart';
+import 'image_picker_helper.dart';
 
 class AddArticleScreen extends StatefulWidget {
-  const AddArticleScreen({Key? key}) : super(key: key);
+  const AddArticleScreen({super.key});
 
   @override
   State<AddArticleScreen> createState() => _AddArticleScreenState();
@@ -22,12 +18,20 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _originalPriceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
 
-  String _selectedCategory = 'Electronica';
-  final List<String> _categories = ['Electronica', 'Ropa', 'Hogar', 'Deportes', 'Otros'];
+  String _selectedCategory = 'Cremas Faciales';
+  final List<String> _categories = [
+    'Cremas Faciales',
+    'Cremas Corporales',
+    'Protectores Labiales',
+    'Aceites Esenciales',
+    'Cuidado y Spa',
+    'Otros',
+  ];
 
-  List<NamedImageFile> _selectedFiles = [];
+  List<PlatformSelectedImage> _selectedFiles = [];
   bool _isSaving = false;
 
   @override
@@ -35,6 +39,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
     _nameController.dispose();
     _descController.dispose();
     _priceController.dispose();
+    _originalPriceController.dispose();
     _stockController.dispose();
     super.dispose();
   }
@@ -101,39 +106,21 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
   // Open native browser file input to select multiple images
   void _pickImages() {
-    final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.multiple = true;
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
-
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files != null) {
-        setState(() {
-          for (var file in files) {
-            _selectedFiles.add(NamedImageFile(file: file, customName: file.name));
-          }
-          // Limit to maximum 8 images
-          if (_selectedFiles.length > 8) {
-            _selectedFiles = _selectedFiles.sublist(0, 8);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Se ha limitado la selección a un máximo de 8 imágenes.'),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          }
-        });
-      }
+    pickImagesPlatform((images) {
+      setState(() {
+        _selectedFiles.addAll(images);
+        // Limit to maximum 8 images
+        if (_selectedFiles.length > 8) {
+          _selectedFiles = _selectedFiles.sublist(0, 8);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Se ha limitado la selección a un máximo de 8 imágenes.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      });
     });
-  }
-
-  // Read html.File bytes asynchronously
-  Future<Uint8List> _readFileBytes(html.File file) async {
-    final reader = html.FileReader();
-    reader.readAsArrayBuffer(file);
-    await reader.onLoadEnd.first;
-    return reader.result as Uint8List;
   }
 
   // Handle uploading images and saving the article
@@ -158,10 +145,15 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       final String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception("Usuario no autenticado");
 
-      // 1. Upload images as multipart form-data
+      // 1. Upload images as multipart form-data organized in product folder inside 'tienda/'
       final formData = FormData();
+      formData.fields.add(const MapEntry("section", "tienda"));
+      final productName = _nameController.text.trim();
+      if (productName.isNotEmpty) {
+        formData.fields.add(MapEntry("product_name", productName));
+      }
       for (var namedFile in _selectedFiles) {
-        final bytes = await _readFileBytes(namedFile.file);
+        final bytes = await namedFile.readBytes();
         formData.files.add(MapEntry(
           "files",
           MultipartFile.fromBytes(bytes, filename: namedFile.customName),
@@ -185,10 +177,16 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       final List<String> imageUrls = List<String>.from(uploadResponse.data);
 
       // 2. Submit the product details with the uploaded image URLs
+      final originalPriceText = _originalPriceController.text.trim();
+      final double? originalPrice = originalPriceText.isNotEmpty
+          ? double.tryParse(originalPriceText)
+          : null;
+
       final articlePayload = {
         "name": _nameController.text.trim(),
         "description": _descController.text.trim(),
         "price": double.parse(_priceController.text.trim()),
+        "original_price": originalPrice,
         "stock": int.parse(_stockController.text.trim()),
         "category": _selectedCategory,
         "image_urls": imageUrls,
@@ -234,8 +232,8 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Nuevo Artículo', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blue,
+        title: const Text('Agregar Nuevo Producto - Relaxbell', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFFBE185D),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -251,7 +249,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       spreadRadius: 2,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
@@ -292,7 +290,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                         validator: (value) => value == null || value.trim().isEmpty ? 'Ingresa una descripción' : null,
                       ),
                       const SizedBox(height: 16),
-                      // Price & Stock
+                      // Price, Original Price & Stock
                       Row(
                         children: [
                           Expanded(
@@ -300,7 +298,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                               controller: _priceController,
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               decoration: InputDecoration(
-                                labelText: 'Precio ({\$})',
+                                labelText: 'Precio Actual (\$)',
                                 prefixIcon: const Icon(Icons.attach_money),
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                               ),
@@ -308,6 +306,32 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                                 if (value == null || value.trim().isEmpty) return 'Ingresa el precio';
                                 if (double.tryParse(value) == null || double.parse(value) <= 0) {
                                   return 'Precio debe ser > 0';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _originalPriceController,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              decoration: InputDecoration(
+                                labelText: 'Precio Original (\$ tachado)',
+                                hintText: 'Opcional (si tiene descuento)',
+                                prefixIcon: const Icon(Icons.money_off_outlined),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              validator: (value) {
+                                if (value != null && value.trim().isNotEmpty) {
+                                  final orig = double.tryParse(value);
+                                  if (orig == null || orig <= 0) {
+                                    return 'Debe ser > 0';
+                                  }
+                                  final currentPrice = double.tryParse(_priceController.text);
+                                  if (currentPrice != null && orig <= currentPrice) {
+                                    return 'Debe ser mayor al actual';
+                                  }
                                 }
                                 return null;
                               },
@@ -337,7 +361,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                       const SizedBox(height: 16),
                       // Category
                       DropdownButtonFormField<String>(
-                        value: _selectedCategory,
+                        initialValue: _selectedCategory,
                         decoration: InputDecoration(
                           labelText: 'Categoría',
                           prefixIcon: const Icon(Icons.category_outlined),
@@ -418,7 +442,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                               itemCount: _selectedFiles.length,
                               itemBuilder: (context, index) {
                                 final namedFile = _selectedFiles[index];
-                                final objectUrl = html.Url.createObjectUrl(namedFile.file);
+                                final objectUrl = namedFile.objectUrl;
                                 return Stack(
                                   children: [
                                     Container(
@@ -442,7 +466,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                                             borderRadius: BorderRadius.circular(6),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.black.withOpacity(0.2),
+                                                color: Colors.black.withValues(alpha: 0.2),
                                                 blurRadius: 4,
                                                 offset: const Offset(0, 2),
                                               ),
@@ -471,7 +495,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                                       right: 0,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.6),
+                                          color: Colors.black.withValues(alpha: 0.6),
                                           borderRadius: const BorderRadius.only(
                                             bottomLeft: Radius.circular(12),
                                             bottomRight: Radius.circular(12),
@@ -509,8 +533,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                                       child: InkWell(
                                         onTap: () {
                                           setState(() {
-                                            _selectedFiles.removeAt(index);
-                                            html.Url.revokeObjectUrl(objectUrl);
+                                            _selectedFiles.removeAt(index).dispose();
                                           });
                                         },
                                         child: Container(
@@ -547,7 +570,7 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
           ),
           if (_isSaving)
             Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               child: const Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -566,12 +589,5 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
       ),
     );
   }
-}
-
-class NamedImageFile {
-  final html.File file;
-  String customName;
-
-  NamedImageFile({required this.file, required this.customName});
 }
 

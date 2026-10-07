@@ -39,17 +39,63 @@ class ArticleBase(BaseModel):
     name: str
     description: Optional[str] = None
     price: float = Field(..., gt=0, description="El precio debe ser mayor a cero")
+    original_price: Optional[float] = Field(None, gt=0, description="Precio anterior/original antes del descuento")
     stock: int = Field(..., ge=0, description="El inventario no puede ser negativo")
     category: Optional[str] = None
     image_urls: List[str] = []
     image_url: Optional[str] = None
+    is_available: bool = True
 
 class ArticleCreate(ArticleBase):
-    pass  # Se usa para recibir datos cuando subes un artículo nuevo
+    pass  # Se usa para recibir datos cuando subes un artículo nuevo o lo editas
 
 class Article(ArticleBase):
     id: int
+    rating_avg: float = 0.0
+    rating_count: int = 0
+
+    class Config:
+        from_attributes = True
+
+# --- SCHEMAS DE CALIFICACIONES Y RESEÑAS ---
+
+class RatingCreate(BaseModel):
+    rating: int = Field(..., ge=1, le=5, description="Puntuación de 1 a 5 estrellas")
+    comment: Optional[str] = Field(None, max_length=500, description="Comentario u opinión sobre el producto")
+
+class RatingResponse(BaseModel):
+    id: int
+    article_id: int
+    user_id: int
+    username: str
+    rating: int
+    comment: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# --- SCHEMAS DE WISHLIST (LISTA DE DESEOS) ---
+
+class WishlistItemResponse(BaseModel):
+    """Representa un artículo guardado en la wishlist con los datos completos del producto."""
+    wishlist_id: int
+    user_id: int
+    article_id: int
+    added_at: datetime
+    # Datos del artículo
+    name: str
+    description: Optional[str] = None
+    price: float
+    stock: int
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    image_urls: List[str] = []
     is_available: bool
+    rating_avg: float = 0.0
+    rating_count: int = 0
 
     class Config:
         from_attributes = True

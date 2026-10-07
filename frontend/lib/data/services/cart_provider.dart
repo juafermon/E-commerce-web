@@ -42,7 +42,7 @@ class CartProvider extends ChangeNotifier {
   }
 
   // Agrega un producto verificando primero el stock en tiempo real en el servidor
-  Future<bool> addArticleWithStockCheck(ArticleModel article, CatalogService catalogService) async {
+  Future<bool> addArticleWithStockCheck(ArticleModel article, CatalogService catalogService, {int quantityToAdd = 1}) async {
     try {
       final latestArticle = await catalogService.fetchArticleById(article.id);
       
@@ -56,7 +56,7 @@ class CartProvider extends ChangeNotifier {
         }
       }
 
-      if (!latestArticle.isAvailable || localQuantity >= latestArticle.stock) {
+      if (!latestArticle.isAvailable || (localQuantity + quantityToAdd) > latestArticle.stock) {
         // No hay suficiente stock en el servidor para incrementar la cantidad o no está disponible
         return false;
       }
@@ -65,10 +65,10 @@ class CartProvider extends ChangeNotifier {
         // Actualizamos el artículo con los datos más recientes del backend e incrementamos
         _items[_items.indexOf(existingItem)] = CartItem(
           article: latestArticle,
-          quantity: localQuantity + 1,
+          quantity: localQuantity + quantityToAdd,
         );
       } else {
-        _items.add(CartItem(article: latestArticle, quantity: 1));
+        _items.add(CartItem(article: latestArticle, quantity: quantityToAdd));
       }
       notifyListeners();
       return true;
@@ -86,6 +86,23 @@ class CartProvider extends ChangeNotifier {
         } else {
           _items.removeAt(i);
         }
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  /// Remueve completamente un artículo del carrito por su id.
+  void removeItem(int articleId) {
+    _items.removeWhere((i) => i.article.id == articleId);
+    notifyListeners();
+  }
+
+  /// Asigna una cantidad específica a un artículo del carrito.
+  void setItemQuantity(int articleId, int newQuantity) {
+    for (var item in _items) {
+      if (item.article.id == articleId) {
+        item.quantity = newQuantity;
         break;
       }
     }

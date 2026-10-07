@@ -3,11 +3,12 @@
 // Importamos las dependencias necesarias: Flutter Material para los widgets, ArticleModel para representar el artículo, CartProvider para manejar el estado del carrito, y AuthService para verificar la autenticación del usuario.
 
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'safe_network_image.dart';
 import '../../data/models/article_model.dart';
 import '../../data/services/cart_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../data/services/catalog_service.dart';
+import '../theme/app_colors.dart';
 
 class ProductCard extends StatefulWidget {
   final ArticleModel article;
@@ -16,12 +17,12 @@ class ProductCard extends StatefulWidget {
   final VoidCallback onArticleAdded; // Callback para avisar a la pantalla principal que refresque
 
   const ProductCard({
-    Key? key,
+    super.key,
     required this.article,
     required this.cartProvider,
     required this.authService,
     required this.onArticleAdded,
-  }) : super(key: key);
+  });
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -30,74 +31,193 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   bool _isLoading = false;
 
+  void _navigateToDetail() {
+    Navigator.pushNamed(
+      context,
+      '/product-detail',
+      arguments: widget.article,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final article = widget.article;
+    final hasDiscount = article.hasDiscount;
+
     return Card(
       elevation: 2,
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen del Producto
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              ),
-              child: widget.article.imageUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: widget.article.imageUrl!,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: _navigateToDetail,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen del Producto con Badge de Descuento
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(12)),
+                    ),
+                    child: article.imageUrl != null
+                        ? SafeNetworkImage(
+                            imageUrl: article.imageUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: const Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: const Icon(
+                              Icons.image_not_supported,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          )
+                        : const Icon(Icons.image_not_supported,
+                            size: 40, color: Colors.grey),
+                  ),
+                  if (hasDiscount)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.discountBadge,
+                          borderRadius: BorderRadius.circular(6),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          '-${article.discountPercentage}%',
+                          style: const TextStyle(
+                            fontFamily: 'DM Sans',
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.2,
+                          ),
                         ),
                       ),
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.image_not_supported,
-                        size: 40,
-                        color: Colors.grey,
-                      ),
-                    )
-                  : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                    ),
+                ],
+              ),
             ),
-          ),
-          // Detalles del Producto
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.article.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  widget.article.category ?? 'Sin categoría',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '\$${widget.article.price.toStringAsFixed(0)}',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+            // Detalles del Producto
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    article.name,
+                    style: const TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
-                    Text(
-                      'Stock: ${widget.article.stock}',
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    article.category ?? 'Sin categoría',
+                    style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                  ),
+                  const SizedBox(height: 4),
+                  // Badge compacto de calificaciones
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star_rounded,
+                        size: 14,
+                        color: article.ratingCount > 0
+                            ? Colors.amber[700]
+                            : Colors.grey[400],
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        article.ratingCount > 0
+                            ? '${article.ratingAvg.toStringAsFixed(1)} · ${article.ratingCount}'
+                            : 'Sin reseñas',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: article.ratingCount > 0
+                              ? Colors.amber[800]
+                              : Colors.grey[400],
+                          fontWeight: article.ratingCount > 0
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Fila de Precios y Stock
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 6,
+                          runSpacing: 2,
+                          children: [
+                            if (hasDiscount) ...[
+                              Text(
+                                ArticleModel.formatPrice(article.originalPrice!),
+                                style: const TextStyle(
+                                  fontFamily: 'DM Sans',
+                                  fontSize: 12,
+                                  color: AppColors.neutral400,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            ],
+                            Text(
+                              ArticleModel.formatPrice(article.price),
+                              style: const TextStyle(
+                                fontFamily: 'DM Sans',
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.neutral900,
+                              ),
+                            ),
+                            if (hasDiscount)
+                              Text(
+                                '(-${article.discountPercentage}%)',
+                                style: const TextStyle(
+                                  fontFamily: 'DM Sans',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.discountBadge,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        'Stock: ${article.stock}',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: _isLoading
@@ -173,6 +293,7 @@ class _ProductCardState extends State<ProductCard> {
           )
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

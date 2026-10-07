@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from Backend.app.core.config import settings
-from Backend.app.routers import auth, articles, orders, categories
+from Backend.app.routers import auth, articles, orders, categories, ratings, wishlist
 
 # Inicialización de la aplicación FastAPI usando la configuración centralizada
 app = FastAPI(
@@ -27,11 +27,13 @@ app.add_middleware(
 # ==============================================================================
 # INCLUSIÓN DE ROUTERS MODULARES
 # ==============================================================================
-# Cada router maneja su propio prefijo (Ej: /auth, /articles, /orders, /categories)
+# Cada router maneja su propio prefijo (Ej: /auth, /articles, /orders, /categories, /articles/{id}/ratings)
 app.include_router(auth.router)
 app.include_router(articles.router)
 app.include_router(orders.router)
 app.include_router(categories.router)
+app.include_router(ratings.router)
+app.include_router(wishlist.router)
 
 
 # ==============================================================================

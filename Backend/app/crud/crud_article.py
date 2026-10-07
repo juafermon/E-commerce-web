@@ -6,7 +6,9 @@ from Backend.app import schemas
 def get_articles(db, skip: int = 0, limit: int = 100):
     """Obtiene la lista de artículos disponibles en la tienda"""
     query = """
-        SELECT id, name, description, price, stock, category, image_urls, is_available 
+        SELECT id, name, description, price, original_price, stock, category, image_urls, is_available,
+               COALESCE(rating_avg, 0.0)::float AS rating_avg,
+               COALESCE(rating_count, 0)::int AS rating_count
         FROM ARTICLES 
         WHERE is_available = TRUE 
         ORDER BY id DESC 
@@ -19,11 +21,21 @@ def get_articles(db, skip: int = 0, limit: int = 100):
             row["image_url"] = row["image_urls"][0]
         else:
             row["image_url"] = None
+        if row.get("original_price") is not None:
+            row["original_price"] = float(row["original_price"])
+        row["rating_avg"] = float(row.get("rating_avg") or 0.0)
+        row["rating_count"] = int(row.get("rating_count") or 0)
     return results
 
 def get_article_by_id(db, article_id: int):
     """Busca un artículo específico por su ID"""
-    query = "SELECT id, name, description, price, stock, category, image_urls, is_available FROM ARTICLES WHERE id = %s;"
+    query = """
+        SELECT id, name, description, price, original_price, stock, category, image_urls, is_available,
+               COALESCE(rating_avg, 0.0)::float AS rating_avg,
+               COALESCE(rating_count, 0)::int AS rating_count
+        FROM ARTICLES 
+        WHERE id = %s;
+    """
     db.execute(query, (article_id,))
     row = db.fetchone()
     if row:
@@ -31,19 +43,24 @@ def get_article_by_id(db, article_id: int):
             row["image_url"] = row["image_urls"][0]
         else:
             row["image_url"] = None
+        if row.get("original_price") is not None:
+            row["original_price"] = float(row["original_price"])
+        row["rating_avg"] = float(row.get("rating_avg") or 0.0)
+        row["rating_count"] = int(row.get("rating_count") or 0)
     return row
 
 def create_article(db, article: schemas.ArticleCreate):
     """Inserta un nuevo artículo en el catálogo de Supabase (Solo Admin) y registra sus imágenes"""
     query = """
-        INSERT INTO ARTICLES (name, description, price, stock, category, image_urls, is_available)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        RETURNING id, name, description, price, stock, category, image_urls, is_available;
+        INSERT INTO ARTICLES (name, description, price, original_price, stock, category, image_urls, is_available)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, name, description, price, original_price, stock, category, image_urls, is_available;
     """
     params = (
         article.name,
         article.description,
         article.price,
+        article.original_price,
         article.stock,
         article.category,
         article.image_urls,
@@ -68,23 +85,29 @@ def create_article(db, article: schemas.ArticleCreate):
             row["image_url"] = row["image_urls"][0]
         else:
             row["image_url"] = None
+        if row.get("original_price") is not None:
+            row["original_price"] = float(row["original_price"])
     return row
 
 def update_article(db, article_id: int, article_data: schemas.ArticleCreate):
     """Actualiza los datos de un artículo existente en Supabase y sincroniza sus imágenes"""
     query = """
         UPDATE ARTICLES 
-        SET name = %s, description = %s, price = %s, stock = %s, category = %s, image_urls = %s
+        SET name = %s, description = %s, price = %s, original_price = %s, stock = %s, category = %s, image_urls = %s, is_available = %s
         WHERE id = %s
-        RETURNING id, name, description, price, stock, category, image_urls, is_available;
+        RETURNING id, name, description, price, original_price, stock, category, image_urls, is_available,
+               COALESCE(rating_avg, 0.0)::float AS rating_avg,
+               COALESCE(rating_count, 0)::int AS rating_count;
     """
     params = (
         article_data.name,
         article_data.description,
         article_data.price,
+        article_data.original_price,
         article_data.stock,
         article_data.category,
         article_data.image_urls,
+        article_data.is_available,
         article_id
     )
     db.execute(query, params)
@@ -107,4 +130,8 @@ def update_article(db, article_id: int, article_data: schemas.ArticleCreate):
             row["image_url"] = row["image_urls"][0]
         else:
             row["image_url"] = None
+        if row.get("original_price") is not None:
+            row["original_price"] = float(row["original_price"])
+        row["rating_avg"] = float(row.get("rating_avg") or 0.0)
+        row["rating_count"] = int(row.get("rating_count") or 0)
     return row
