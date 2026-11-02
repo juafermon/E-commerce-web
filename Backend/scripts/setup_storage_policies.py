@@ -3,10 +3,6 @@ from Backend.app.database import get_db_connection
 def setup_storage_policies():
     with get_db_connection() as conn:
         with conn.cursor() as cur:
-            # Enable RLS if not already enabled
-            cur.execute("ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;")
-            
-            # Create policies for images bucket
             policies = [
                 (
                     "images_bucket_select",
@@ -44,7 +40,7 @@ def setup_storage_policies():
             ]
             
             for name, sql in policies:
-                cur.execute(f"DROP POLICY IF EXISTS {name} ON storage.objects;")
+                cur.execute(f"DROP POLICY IF EXISTS \"{name}\" ON storage.objects;")
                 cur.execute(sql)
                 print(f"[OK] Policy '{name}' created.")
                 

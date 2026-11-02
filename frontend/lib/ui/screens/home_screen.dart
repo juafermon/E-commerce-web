@@ -1,7 +1,9 @@
 // lib/ui/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../data/services/cart_provider.dart';
 import '../../data/services/auth_service.dart';
+import '../theme/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   final CartProvider cartProvider;
@@ -54,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final bool isWide = size.width > 850;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFBF9), // Tono cálido marfil / cashmere spa
+      backgroundColor: AppColors.marfil,
       appBar: _buildTopBar(context),
       body: SingleChildScrollView(
         child: Column(
@@ -65,8 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
             // Main Selection Hub (Tienda Cuidado Personal vs Servicios Spa/Masajes)
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: isWide ? 48.0 : 20.0,
-                vertical: 24.0,
+                horizontal: isWide ? AppSpacing.space12 : AppSpacing.space4,
+                vertical: AppSpacing.space6,
               ),
               child: Center(
                 child: ConstrainedBox(
@@ -76,14 +78,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(child: _buildStoreCard()),
-                            const SizedBox(width: 32),
+                            const SizedBox(width: AppSpacing.space8),
                             Expanded(child: _buildServicesCard()),
                           ],
                         )
                       : Column(
                           children: [
                             _buildStoreCard(),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: AppSpacing.space6),
                             _buildServicesCard(),
                           ],
                         ),
@@ -104,11 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   PreferredSizeWidget _buildTopBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.blanco,
       elevation: 0,
       scrolledUnderElevation: 0,
-      shape: Border(
-        bottom: BorderSide(color: const Color(0xFFF1EBE4), width: 1),
+      shape: const Border(
+        bottom: BorderSide(color: AppColors.arena, width: 1),
       ),
       title: Row(
         mainAxisSize: MainAxisSize.min,
@@ -118,25 +120,25 @@ class _HomeScreenState extends State<HomeScreen> {
           // ═══════════════════════════════════════
           _buildLogoPlaceholderCompact(),
 
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.space3),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'RELAXBELL',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF2E1065),
+                style: GoogleFonts.playfairDisplay(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.carbon,
                   fontSize: 19,
                   letterSpacing: 1.5,
                 ),
               ),
-              Text(
+              const Text(
                 'Cuidado Personal & Spa',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFFBE185D).withValues(alpha: 0.9),
+                  color: AppColors.cobreOscuro,
                   fontSize: 11,
                   letterSpacing: 0.3,
                 ),
@@ -149,25 +151,25 @@ class _HomeScreenState extends State<HomeScreen> {
         // Botón a Tienda de Productos
         TextButton.icon(
           onPressed: () => Navigator.pushNamed(context, '/catalog'),
-          icon: const Icon(Icons.spa_outlined, size: 18, color: Color(0xFFBE185D)),
-          label: const Text('Productos', style: TextStyle(color: Color(0xFFBE185D), fontWeight: FontWeight.w600)),
+          icon: const Icon(Icons.spa_outlined, size: 18, color: AppColors.cobreOscuro),
+          label: const Text('Productos', style: TextStyle(color: AppColors.carbon, fontWeight: FontWeight.w600)),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppSpacing.space1),
 
         // Botón a Masajes y Servicios
         TextButton.icon(
           onPressed: () => Navigator.pushNamed(context, '/services'),
-          icon: const Icon(Icons.self_improvement_outlined, size: 18, color: Color(0xFF0D9488)),
-          label: const Text('Masajes & Servicios', style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.w600)),
+          icon: const Icon(Icons.self_improvement_outlined, size: 18, color: AppColors.champagne),
+          label: const Text('Masajes & Servicios', style: TextStyle(color: AppColors.carbon, fontWeight: FontWeight.w600)),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.space2),
 
         // Carrito con Badge Contador
         Stack(
           alignment: Alignment.center,
           children: [
             IconButton(
-              icon: const Icon(Icons.shopping_bag_outlined, color: Color(0xFF475569)),
+              icon: const Icon(Icons.shopping_bag_outlined, color: AppColors.carbon),
               tooltip: 'Ver Carrito de Compras',
               onPressed: () => Navigator.pushNamed(context, '/cart'),
             ),
@@ -178,14 +180,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFBE185D),
+                    color: AppColors.cobreOscuro,
                     shape: BoxShape.circle,
                   ),
                   constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                   child: Text(
                     '${widget.cartProvider.itemCount}',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.blanco,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
@@ -196,35 +198,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
 
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.space2),
 
         // Estado de usuario
         if (_isLoggedIn) ...[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFFFDF2F8),
+              color: AppColors.marfil,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFFBCFE8)),
+              border: Border.all(color: AppColors.arena),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.person_outline, size: 16, color: Color(0xFFBE185D)),
+                const Icon(Icons.person_outline, size: 16, color: AppColors.cobreOscuro),
                 const SizedBox(width: 6),
                 Text(
                   _username ?? 'Usuario',
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFFBE185D),
+                    color: AppColors.carbon,
                   ),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.logout, size: 18, color: Colors.grey),
+            icon: const Icon(Icons.logout, size: 18, color: AppColors.grisCalido),
             tooltip: 'Cerrar Sesión',
             onPressed: () async {
               await _authService.logout();
@@ -239,12 +241,12 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: const Text(
               'Iniciar Sesión',
-              style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFBE185D)),
+              style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.cobreOscuro),
             ),
           ),
         ],
 
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.space4),
       ],
     );
   }
@@ -257,31 +259,29 @@ class _HomeScreenState extends State<HomeScreen> {
       width: 42,
       height: 42,
       decoration: BoxDecoration(
-        color: const Color(0xFFFDF2F8),
+        color: AppColors.marfil,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFFF472B6).withValues(alpha: 0.5),
+          color: AppColors.champagne.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
-      child: Stack(
+      child: const Stack(
         alignment: Alignment.center,
         children: [
-          // Icono representativo provisional mientras se integra el archivo de imagen
-          const Icon(
+          Icon(
             Icons.spa_rounded,
-            color: Color(0xFFBE185D),
+            color: AppColors.cobreOscuro,
             size: 22,
           ),
-          // Indicador para desarrollo
           Positioned(
             bottom: 2,
             child: Text(
-              'LOGO',
+              'RELAX',
               style: TextStyle(
                 fontSize: 6,
                 fontWeight: FontWeight.w900,
-                color: const Color(0xFFBE185D).withValues(alpha: 0.7),
+                color: AppColors.carbon,
                 letterSpacing: 0.5,
               ),
             ),
@@ -298,17 +298,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: isWide ? 40.0 : 20.0,
-        vertical: isWide ? 44.0 : 28.0,
+        horizontal: isWide ? AppSpacing.space12 : AppSpacing.space4,
+        vertical: isWide ? AppSpacing.space12 : AppSpacing.space8,
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.white,
-            const Color(0xFFFDF2F8).withValues(alpha: 0.5),
-            const Color(0xFFF0FDFA).withValues(alpha: 0.3),
+            AppColors.blanco,
+            AppColors.marfil,
+            const Color(0xFFF0EBE1),
           ],
         ),
       ),
@@ -322,28 +322,28 @@ class _HomeScreenState extends State<HomeScreen> {
               // ══════════════════════════════════════════════
               _buildProminentLogoSpot(),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space4),
 
               // Chip de Bienvenida Spa & Cuidado Personal
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFBE185D).withValues(alpha: 0.08),
+                  color: AppColors.champagne.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: const Color(0xFFBE185D).withValues(alpha: 0.25),
+                    color: AppColors.champagne.withValues(alpha: 0.4),
                   ),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.auto_awesome, color: Color(0xFFBE185D), size: 16),
+                    Icon(Icons.auto_awesome, color: AppColors.cobreOscuro, size: 16),
                     SizedBox(width: 8),
                     Text(
                       'Bienestar Integral • Belleza Natural • Terapia Holística',
                       style: TextStyle(
-                        color: Color(0xFFBE185D),
-                        fontWeight: FontWeight.w700,
+                        color: AppColors.carbon,
+                        fontWeight: FontWeight.w600,
                         fontSize: 13,
                         letterSpacing: 0.3,
                       ),
@@ -351,21 +351,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space4),
 
               // Título Principal Relaxbell
               Text(
                 'Armonía para tu cuerpo, mente y piel',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: isWide ? 42 : 28,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF1E1B4B),
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: isWide ? 44 : 30,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.carbon,
                   height: 1.15,
-                  letterSpacing: -1.0,
+                  letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: AppSpacing.space3),
 
               // Subtítulo
               Text(
@@ -374,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                   fontSize: isWide ? 16 : 14,
                   height: 1.6,
-                  color: const Color(0xFF4B5563),
+                  color: AppColors.grisCalido,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -393,15 +393,15 @@ class _HomeScreenState extends State<HomeScreen> {
       width: 140,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.blanco,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFFF472B6).withValues(alpha: 0.6),
+          color: AppColors.champagne.withValues(alpha: 0.5),
           width: 1.8,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFBE185D).withValues(alpha: 0.08),
+            color: AppColors.cobreOscuro.withValues(alpha: 0.08),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -410,25 +410,24 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Fondo suave con icono floral
           Icon(
             Icons.spa_rounded,
-            color: const Color(0xFFFDF2F8),
+            color: AppColors.champagne.withValues(alpha: 0.15),
             size: 54,
           ),
-          Column(
+          const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.add_photo_alternate_outlined,
-                color: const Color(0xFFBE185D).withValues(alpha: 0.7),
+                color: AppColors.cobreOscuro,
                 size: 26,
               ),
-              const SizedBox(height: 4),
-              const Text(
+              SizedBox(height: 4),
+              Text(
                 'Espacio para Logo',
                 style: TextStyle(
-                  color: Color(0xFFBE185D),
+                  color: AppColors.carbon,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
@@ -437,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Relaxbell',
                 style: TextStyle(
-                  color: const Color(0xFF2E1065).withValues(alpha: 0.6),
+                  color: AppColors.cobreOscuro,
                   fontSize: 8,
                   fontWeight: FontWeight.w600,
                 ),
@@ -460,42 +459,42 @@ class _HomeScreenState extends State<HomeScreen> {
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, '/catalog'),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 240),
-          curve: Curves.easeOutCubic,
-          transform: Matrix4.translationValues(0.0, _hoverStore ? -8.0 : 0.0, 0.0),
+          duration: AppTransitions.duration,
+          curve: AppTransitions.curve,
+          transform: Matrix4.translationValues(0.0, _hoverStore ? -6.0 : 0.0, 0.0),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            color: AppColors.blanco,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _hoverStore ? const Color(0xFFBE185D) : const Color(0xFFF1EBE4),
-              width: _hoverStore ? 2 : 1,
+              color: _hoverStore ? AppColors.cobreOscuro : AppColors.arena,
+              width: _hoverStore ? 1.5 : 1,
             ),
             boxShadow: [
               BoxShadow(
                 color: _hoverStore
-                    ? const Color(0xFFBE185D).withValues(alpha: 0.18)
+                    ? AppColors.cobreOscuro.withValues(alpha: 0.15)
                     : Colors.black.withValues(alpha: 0.04),
-                blurRadius: _hoverStore ? 28 : 12,
-                offset: Offset(0, _hoverStore ? 12 : 4),
+                blurRadius: _hoverStore ? 24 : 10,
+                offset: Offset(0, _hoverStore ? 8 : 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cabecera con degradado Rose / Magenta Spa
+              // Cabecera con degradado Carbón & Cobre Oscuro
               Container(
                 height: 160,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF831843), Color(0xFFBE185D), Color(0xFFF472B6)],
+                    colors: [AppColors.carbon, Color(0xFF382E28), AppColors.cobreOscuro],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(22),
-                    topRight: Radius.circular(22),
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
                   ),
                 ),
                 padding: const EdgeInsets.all(24),
@@ -509,13 +508,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.22),
+                            color: AppColors.blanco.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
                             'CUIDADO PERSONAL & BELLEZA',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.blanco,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.8,
@@ -525,23 +524,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
+                            color: AppColors.blanco.withValues(alpha: 0.18),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.arrow_forward_rounded, color: AppColors.blanco, size: 20),
                         ),
                       ],
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.sanitizer_outlined, color: Colors.white, size: 36),
-                        SizedBox(width: 14),
+                        const Icon(Icons.sanitizer_outlined, color: AppColors.blanco, size: 36),
+                        const SizedBox(width: 14),
                         Text(
                           'Tienda',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: GoogleFonts.playfairDisplay(
+                            color: AppColors.blanco,
                             fontSize: 30,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.bold,
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -557,12 +556,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Fórmulas que consienten tu piel',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1E1B4B),
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.carbon,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -570,18 +569,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Encuentra cremas hidratantes de extracto botánico, protectores labiales nutritivos con mantecas naturales y aceites esenciales para tu rutina diaria de cuidado.',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF64748B),
+                        color: AppColors.grisCalido,
                         height: 1.55,
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Bullets de características
-                    _buildFeatureItem(Icons.check_circle_rounded, 'Cremas faciales y corporales hidratantes y nutritivas', const Color(0xFFBE185D)),
+                    _buildFeatureItem(Icons.check_circle_rounded, 'Cremas faciales y corporales hidratantes y nutritivas', AppColors.cobreOscuro),
                     const SizedBox(height: 10),
-                    _buildFeatureItem(Icons.check_circle_rounded, 'Bálsamos y protectores labiales con activos naturales', const Color(0xFFBE185D)),
+                    _buildFeatureItem(Icons.check_circle_rounded, 'Bálsamos y protectores labiales con activos naturales', AppColors.cobreOscuro),
                     const SizedBox(height: 10),
-                    _buildFeatureItem(Icons.check_circle_rounded, 'Aceites esenciales y lociones botánicas con stock real', const Color(0xFFBE185D)),
+                    _buildFeatureItem(Icons.check_circle_rounded, 'Aceites esenciales y lociones botánicas con stock real', AppColors.cobreOscuro),
 
                     const SizedBox(height: 28),
 
@@ -597,10 +596,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFBE185D),
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.carbon,
+                          foregroundColor: AppColors.blanco,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
                           ),
                           elevation: _hoverStore ? 4 : 1,
                         ),
@@ -627,42 +626,42 @@ class _HomeScreenState extends State<HomeScreen> {
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, '/services'),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 240),
-          curve: Curves.easeOutCubic,
-          transform: Matrix4.translationValues(0.0, _hoverServices ? -8.0 : 0.0, 0.0),
+          duration: AppTransitions.duration,
+          curve: AppTransitions.curve,
+          transform: Matrix4.translationValues(0.0, _hoverServices ? -6.0 : 0.0, 0.0),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            color: AppColors.blanco,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _hoverServices ? const Color(0xFF0D9488) : const Color(0xFFF1EBE4),
-              width: _hoverServices ? 2 : 1,
+              color: _hoverServices ? AppColors.champagne : AppColors.arena,
+              width: _hoverServices ? 1.5 : 1,
             ),
             boxShadow: [
               BoxShadow(
                 color: _hoverServices
-                    ? const Color(0xFF0D9488).withValues(alpha: 0.18)
+                    ? AppColors.champagne.withValues(alpha: 0.25)
                     : Colors.black.withValues(alpha: 0.04),
-                blurRadius: _hoverServices ? 28 : 12,
-                offset: Offset(0, _hoverServices ? 12 : 4),
+                blurRadius: _hoverServices ? 24 : 10,
+                offset: Offset(0, _hoverServices ? 8 : 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cabecera con degradado Teal / Eucalipto Spa
+              // Cabecera con degradado Champagne & Tierra cálido
               Container(
                 height: 160,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF115E59), Color(0xFF0D9488), Color(0xFF2DD4BF)],
+                    colors: [Color(0xFF2C2723), Color(0xFF4A3E36), AppColors.champagne],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(22),
-                    topRight: Radius.circular(22),
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
                   ),
                 ),
                 padding: const EdgeInsets.all(24),
@@ -676,13 +675,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.22),
+                            color: AppColors.blanco.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
                             'TERAPIAS & SPA RELAJANTE',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.blanco,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.8,
@@ -692,23 +691,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
+                            color: AppColors.blanco.withValues(alpha: 0.18),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.arrow_forward_rounded, color: AppColors.blanco, size: 20),
                         ),
                       ],
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.self_improvement_rounded, color: Colors.white, size: 36),
-                        SizedBox(width: 14),
+                        const Icon(Icons.self_improvement_rounded, color: AppColors.blanco, size: 36),
+                        const SizedBox(width: 14),
                         Text(
                           'Servicios',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: GoogleFonts.playfairDisplay(
+                            color: AppColors.blanco,
                             fontSize: 30,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.bold,
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -724,12 +723,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Masajes & Técnica AromaTouch®',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1E1B4B),
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.carbon,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -737,18 +736,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Renueva tu energía y libera la carga muscular acumulada. Experimenta nuestra técnica AromaTouch con aceites esenciales de grado puro y masajes descontracturantes.',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF64748B),
+                        color: AppColors.grisCalido,
                         height: 1.55,
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Bullets de características
-                    _buildFeatureItem(Icons.check_circle_rounded, 'Técnica AromaTouch® para reducir estrés y restaurar equilibrio', const Color(0xFF0D9488)),
+                    _buildFeatureItem(Icons.check_circle_rounded, 'Técnica AromaTouch® para reducir estrés y restaurar equilibrio', AppColors.cobreOscuro),
                     const SizedBox(height: 10),
-                    _buildFeatureItem(Icons.check_circle_rounded, 'Masajes relajantes, terapéuticos y descontracturantes', const Color(0xFF0D9488)),
+                    _buildFeatureItem(Icons.check_circle_rounded, 'Masajes relajantes, terapéuticos y descontracturantes', AppColors.cobreOscuro),
                     const SizedBox(height: 10),
-                    _buildFeatureItem(Icons.check_circle_rounded, 'Ambiente de aromaterapia y atención personalizada', const Color(0xFF0D9488)),
+                    _buildFeatureItem(Icons.check_circle_rounded, 'Ambiente de aromaterapia y atención personalizada', AppColors.cobreOscuro),
 
                     const SizedBox(height: 28),
 
@@ -764,10 +763,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0D9488),
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.cobreOscuro,
+                          foregroundColor: AppColors.blanco,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
                           ),
                           elevation: _hoverServices ? 4 : 1,
                         ),
@@ -794,7 +793,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF334155),
+              color: AppColors.carbon,
             ),
           ),
         ),
@@ -805,60 +804,60 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildValueSection(bool isWide) {
     return Container(
       width: double.infinity,
-      color: Colors.white,
+      color: AppColors.blanco,
       padding: EdgeInsets.symmetric(
-        horizontal: isWide ? 48.0 : 20.0,
-        vertical: 48.0,
+        horizontal: isWide ? AppSpacing.space12 : AppSpacing.space4,
+        vertical: AppSpacing.space12,
       ),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
           child: Column(
             children: [
-              const Text(
+              Text(
                 'La Experiencia Relaxbell',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E1B4B),
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.carbon,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.space2),
               const Text(
                 'Compromiso con tu salud, belleza natural y bienestar integral',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF64748B),
+                  color: AppColors.grisCalido,
                 ),
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: AppSpacing.space8),
               isWide
                   ? const Row(
                       children: [
                         Expanded(
                           child: _ValueCard(
-                            icon: Icons.eco_rounded,
-                            iconColor: Color(0xFF059669),
+                            icon: Icons.eco_outlined,
+                            iconColor: AppColors.cobreOscuro,
                             title: 'Ingredientes Botánicos',
                             description: 'Fórmulas puras y naturales sin parabenos agresivos, ideales para todo tipo de piel.',
                           ),
                         ),
-                        SizedBox(width: 24),
+                        SizedBox(width: AppSpacing.space6),
                         Expanded(
                           child: _ValueCard(
                             icon: Icons.air_rounded,
-                            iconColor: Color(0xFFBE185D),
+                            iconColor: AppColors.champagne,
                             title: 'Técnica AromaTouch®',
                             description: 'Protocolo clínico con 8 aceites esenciales certificados para reducir el estrés físico y mental.',
                           ),
                         ),
-                        SizedBox(width: 24),
+                        SizedBox(width: AppSpacing.space6),
                         Expanded(
                           child: _ValueCard(
-                            icon: Icons.favorite_rounded,
-                            iconColor: Color(0xFFD97706),
+                            icon: Icons.favorite_outline_rounded,
+                            iconColor: AppColors.cobreOscuro,
                             title: 'Atención Holística',
                             description: 'Terapeutas dedicados a personalizar cada masaje y asesorarte en tu rutina de cuidado.',
                           ),
@@ -868,22 +867,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   : const Column(
                       children: [
                         _ValueCard(
-                          icon: Icons.eco_rounded,
-                          iconColor: Color(0xFF059669),
+                          icon: Icons.eco_outlined,
+                          iconColor: AppColors.cobreOscuro,
                           title: 'Ingredientes Botánicos',
                           description: 'Fórmulas puras y naturales sin parabenos agresivos, ideales para todo tipo de piel.',
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.space4),
                         _ValueCard(
                           icon: Icons.air_rounded,
-                          iconColor: Color(0xFFBE185D),
+                          iconColor: AppColors.champagne,
                           title: 'Técnica AromaTouch®',
                           description: 'Protocolo clínico con 8 aceites esenciales certificados para reducir el estrés físico y mental.',
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.space4),
                         _ValueCard(
-                          icon: Icons.favorite_rounded,
-                          iconColor: Color(0xFFD97706),
+                          icon: Icons.favorite_outline_rounded,
+                          iconColor: AppColors.cobreOscuro,
                           title: 'Atención Holística',
                           description: 'Terapeutas dedicados a personalizar cada masaje y asesorarte en tu rutina de cuidado.',
                         ),
@@ -899,17 +898,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildFooter() {
     return Container(
       width: double.infinity,
-      color: const Color(0xFF1E1B4B),
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      color: AppColors.carbon,
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
       child: Center(
         child: Column(
           children: [
-            const Text(
+            Text(
               'RELAXBELL',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
+              style: GoogleFonts.playfairDisplay(
+                color: AppColors.blanco,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
                 letterSpacing: 2.0,
               ),
             ),
@@ -917,7 +916,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Text(
               'Cuidado Personal • Cremas & Protectores • Masajes & Técnica AromaTouch',
               style: TextStyle(
-                color: Color(0xFFC7D2FE),
+                color: AppColors.arena,
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,
@@ -926,7 +925,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               '© ${DateTime.now().year} Relaxbell. Todos los derechos reservados.',
               style: const TextStyle(
-                color: Color(0xFF94A3B8),
+                color: AppColors.grisCalido,
                 fontSize: 12,
               ),
             ),
@@ -955,9 +954,9 @@ class _ValueCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: const Color(0xFFFDFBF9),
+        color: AppColors.marfil,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1EBE4)),
+        border: Border.all(color: AppColors.arena),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -973,10 +972,10 @@ class _ValueCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1E1B4B),
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: AppColors.carbon,
             ),
           ),
           const SizedBox(height: 8),
@@ -984,7 +983,7 @@ class _ValueCard extends StatelessWidget {
             description,
             style: const TextStyle(
               fontSize: 13,
-              color: Color(0xFF64748B),
+              color: AppColors.grisCalido,
               height: 1.5,
             ),
           ),
@@ -993,3 +992,4 @@ class _ValueCard extends StatelessWidget {
     );
   }
 }
+

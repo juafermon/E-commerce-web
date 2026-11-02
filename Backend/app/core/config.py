@@ -20,9 +20,12 @@ class Settings:
 
     # Configuración de Supabase Storage
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://tyrxhfpmthuulifuropu.supabase.co")
-    # Usa preferentemente la clave service_role para uploads desde backend
-    SUPABASE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY")
+    # Para llamadas a Supabase Storage, se debe usar un JWT válido (eyJ...) o la clave publishable (sb_publishable_...).
+    # Las claves de tipo sb_secret_... son tokens de gestión que la API de Storage rechaza con 'Invalid Compact JWS'.
+    _svc_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    _pb_key = os.getenv("SUPABASE_KEY", "").strip()
+    SUPABASE_KEY: str = _svc_key if _svc_key.startswith("eyJ") else (_pb_key if _pb_key else _svc_key)
     # Nombre del bucket donde se guardarán las imágenes de productos
-    SUPABASE_BUCKET: str = os.getenv("SUPABASE_BUCKET", "Images")
+    SUPABASE_BUCKET: str = os.getenv("SUPABASE_BUCKET", "images")
 
 settings = Settings()

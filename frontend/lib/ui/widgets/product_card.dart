@@ -1,8 +1,9 @@
 // lib/ui/widgets/product_card.dart
-// Este widget representa una tarjeta de producto que se muestra en la pantalla principal. Muestra la imagen, nombre, categoría, precio y stock del artículo, y tiene un botón para añadir el producto al carrito. El botón verifica si el usuario está autenticado antes de permitir añadir al carrito, y muestra un mensaje adecuado si no lo está.
-// Importamos las dependencias necesarias: Flutter Material para los widgets, ArticleModel para representar el artículo, CartProvider para manejar el estado del carrito, y AuthService para verificar la autenticación del usuario.
+// Tarjeta de producto estilizada con la paleta de lujo Relaxbell:
+// Superficie Blanco, Borde Arena, Títulos en Playfair Display, Botones en Carbón y Acentos Cobre Oscuro.
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'safe_network_image.dart';
 import '../../data/models/article_model.dart';
 import '../../data/services/cart_provider.dart';
@@ -14,7 +15,7 @@ class ProductCard extends StatefulWidget {
   final ArticleModel article;
   final CartProvider cartProvider;
   final AuthService authService;
-  final VoidCallback onArticleAdded; // Callback para avisar a la pantalla principal que refresque
+  final VoidCallback onArticleAdded;
 
   const ProductCard({
     super.key,
@@ -30,6 +31,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   bool _isLoading = false;
+  bool _isHovered = false;
 
   void _navigateToDetail() {
     Navigator.pushNamed(
@@ -44,256 +46,305 @@ class _ProductCardState extends State<ProductCard> {
     final article = widget.article;
     final hasDiscount = article.hasDiscount;
 
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: _navigateToDetail,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Imagen del Producto con Badge de Descuento
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(12)),
-                    ),
-                    child: article.imageUrl != null
-                        ? SafeNetworkImage(
-                            imageUrl: article.imageUrl!,
-                            fit: BoxFit.cover,
-                            placeholder: const Center(
-                              child: SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            ),
-                            errorWidget: const Icon(
-                              Icons.image_not_supported,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
-                          )
-                        : const Icon(Icons.image_not_supported,
-                            size: 40, color: Colors.grey),
-                  ),
-                  if (hasDiscount)
-                    Positioned(
-                      top: 8,
-                      left: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.discountBadge,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: AppTransitions.duration,
+        curve: AppTransitions.curve,
+        decoration: BoxDecoration(
+          color: AppColors.blanco,
+          borderRadius: AppRadius.borderMd,
+          border: Border.all(
+            color: _isHovered
+                ? AppColors.champagne.withValues(alpha: 0.8)
+                : AppColors.arena.withValues(alpha: 0.7),
+            width: 1.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.carbon.withValues(alpha: _isHovered ? 0.08 : 0.02),
+              blurRadius: _isHovered ? 12 : 4,
+              offset: Offset(0, _isHovered ? 6 : 2),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: _navigateToDetail,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Imagen del Producto con Badge de Descuento
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: AppColors.marfil,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(AppRadius.md),
                         ),
-                        child: Text(
-                          '-${article.discountPercentage}%',
-                          style: const TextStyle(
-                            fontFamily: 'DM Sans',
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.2,
+                      ),
+                      child: article.imageUrl != null
+                          ? SafeNetworkImage(
+                              imageUrl: article.imageUrl!,
+                              fit: BoxFit.cover,
+                              placeholder: const Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.cobreOscuro,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: const Icon(
+                                Icons.image_not_supported_outlined,
+                                size: 36,
+                                color: AppColors.arena,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.image_not_supported_outlined,
+                              size: 36,
+                              color: AppColors.arena,
+                            ),
+                    ),
+                    if (hasDiscount)
+                      Positioned(
+                        top: AppSpacing.space2,
+                        left: AppSpacing.space2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.space2,
+                            vertical: AppSpacing.space1,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: AppColors.cobreOscuro,
+                            borderRadius: AppRadius.borderSm,
+                          ),
+                          child: Text(
+                            '-${article.discountPercentage}%',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: AppColors.blanco,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            // Detalles del Producto
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    article.name,
-                    style: const TextStyle(
-                      fontFamily: 'DM Sans',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+
+              // Detalles del Producto
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.space3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Categoría
+                    Text(
+                      (article.category ?? 'General').toUpperCase(),
+                      style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.grisCalido,
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.8,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    article.category ?? 'Sin categoría',
-                    style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                  ),
-                  const SizedBox(height: 4),
-                  // Badge compacto de calificaciones
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        size: 14,
-                        color: article.ratingCount > 0
-                            ? Colors.amber[700]
-                            : Colors.grey[400],
+                    const SizedBox(height: AppSpacing.space1),
+
+                    // Nombre en Playfair Display
+                    Text(
+                      article.name,
+                      style: GoogleFonts.playfairDisplay(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.5,
+                        color: AppColors.carbon,
+                        height: 1.25,
                       ),
-                      const SizedBox(width: 3),
-                      Text(
-                        article.ratingCount > 0
-                            ? '${article.ratingAvg.toStringAsFixed(1)} · ${article.ratingCount}'
-                            : 'Sin reseñas',
-                        style: TextStyle(
-                          fontSize: 11,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: AppSpacing.space1),
+
+                    // Reseñas y Estrellas en Champagne
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star_rounded,
+                          size: 14,
                           color: article.ratingCount > 0
-                              ? Colors.amber[800]
-                              : Colors.grey[400],
-                          fontWeight: article.ratingCount > 0
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                              ? AppColors.champagne
+                              : AppColors.arena,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Fila de Precios y Stock
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 6,
-                          runSpacing: 2,
-                          children: [
-                            if (hasDiscount) ...[
+                        const SizedBox(width: AppSpacing.space1),
+                        Text(
+                          article.ratingCount > 0
+                              ? '${article.ratingAvg.toStringAsFixed(1)} (${article.ratingCount})'
+                              : 'Nuevo',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            color: AppColors.grisCalido,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.space2),
+
+                    // Precios y Stock
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: AppSpacing.space1 + 1,
+                            runSpacing: 2,
+                            children: [
+                              if (hasDiscount) ...[
+                                Text(
+                                  ArticleModel.formatPrice(article.originalPrice!),
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11.5,
+                                    color: AppColors.grisCalido,
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationColor: AppColors.grisCalido,
+                                  ),
+                                ),
+                              ],
                               Text(
-                                ArticleModel.formatPrice(article.originalPrice!),
-                                style: const TextStyle(
-                                  fontFamily: 'DM Sans',
-                                  fontSize: 12,
-                                  color: AppColors.neutral400,
-                                  decoration: TextDecoration.lineThrough,
+                                ArticleModel.formatPrice(article.price),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.carbon,
                                 ),
                               ),
+                              if (hasDiscount)
+                                Text(
+                                  '(-${article.discountPercentage}%)',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.cobreOscuro,
+                                  ),
+                                ),
                             ],
-                            Text(
-                              ArticleModel.formatPrice(article.price),
-                              style: const TextStyle(
-                                fontFamily: 'DM Sans',
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.neutral900,
-                              ),
-                            ),
-                            if (hasDiscount)
-                              Text(
-                                '(-${article.discountPercentage}%)',
-                                style: const TextStyle(
-                                  fontFamily: 'DM Sans',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.discountBadge,
-                                ),
-                              ),
-                          ],
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Stock: ${article.stock}',
-                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
-                          final scaffoldMessenger = ScaffoldMessenger.of(context);
-                          final navigator = Navigator.of(context);
-                          String? token = await widget.authService.getToken();
-                          if (token == null) {
-                            scaffoldMessenger.showSnackBar(
-                              const SnackBar(content: Text('Inicia sesión para añadir productos'), backgroundColor: Colors.orange),
-                            );
-                            navigator.pushNamed('/login');
-                          } else {
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            try {
-                              bool success = await widget.cartProvider.addArticleWithStockCheck(
-                                widget.article,
-                                CatalogService(),
-                              );
-                              if (success) {
-                                widget.onArticleAdded(); // Ejecuta la actualización en el Home
+                        Text(
+                          'Stock: ${article.stock}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10.5,
+                            color: AppColors.grisCalido,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.space3),
+
+                    // Botón "Añadir" en Carbón
+                    ElevatedButton.icon(
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                              final scaffoldMessenger = ScaffoldMessenger.of(context);
+                              final navigator = Navigator.of(context);
+                              String? token = await widget.authService.getToken();
+                              if (token == null) {
                                 scaffoldMessenger.showSnackBar(
-                                  SnackBar(content: Text('${widget.article.name} añadido'), duration: const Duration(seconds: 1)),
-                                );
-                              } else {
-                                scaffoldMessenger.showSnackBar(
-                                  SnackBar(
-                                    content: Text('No hay más stock disponible para ${widget.article.name}'),
-                                    backgroundColor: Colors.red,
+                                  const SnackBar(
+                                    content: Text('Inicia sesión para añadir productos'),
+                                    backgroundColor: AppColors.carbon,
                                   ),
                                 );
-                              }
-                            } catch (e) {
-                              scaffoldMessenger.showSnackBar(
-                                SnackBar(
-                                  content: Text('Error de conexión o red: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            } finally {
-                              if (mounted) {
+                                navigator.pushNamed('/login');
+                              } else {
                                 setState(() {
-                                  _isLoading = false;
+                                  _isLoading = true;
                                 });
+                                try {
+                                  bool success = await widget.cartProvider.addArticleWithStockCheck(
+                                    widget.article,
+                                    CatalogService(),
+                                  );
+                                  if (success) {
+                                    widget.onArticleAdded();
+                                    scaffoldMessenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text('${widget.article.name} añadido al carrito'),
+                                        duration: const Duration(seconds: 1),
+                                        backgroundColor: AppColors.carbon,
+                                      ),
+                                    );
+                                  } else {
+                                    scaffoldMessenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text('No hay más stock disponible para ${widget.article.name}'),
+                                        backgroundColor: AppColors.error,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  scaffoldMessenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error de conexión: $e'),
+                                      backgroundColor: AppColors.error,
+                                    ),
+                                  );
+                                } finally {
+                                  if (mounted) {
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                  }
+                                }
                               }
-                            }
-                          }
-                        },
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.add_shopping_cart, size: 14),
-                  label: Text(_isLoading ? 'Verificando...' : 'Añadir', style: const TextStyle(fontSize: 11)),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 34),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                  ),
+                            },
+                      icon: _isLoading
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.blanco,
+                              ),
+                            )
+                          : const Icon(Icons.add_shopping_cart, size: 14),
+                      label: Text(
+                        _isLoading ? 'Verificando...' : 'Añadir',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 34),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: AppRadius.borderMd,
+                        ),
+                        backgroundColor: AppColors.carbon,
+                        foregroundColor: AppColors.blanco,
+                        elevation: 0,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )
-        ],
+              )
+            ],
+          ),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

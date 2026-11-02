@@ -16,6 +16,7 @@ import 'ui/screens/add_article_screen.dart';
 import 'ui/screens/edit_article_screen.dart';
 import 'ui/screens/product_detail_screen.dart';
 import 'data/models/article_model.dart';
+import 'ui/theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,10 +37,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Relaxbell - Cuidado Personal & Bienestar',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: const Color(0xFFBE185D),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       initialRoute: '/',
       routes: {
         '/': (context) => HomeScreen(cartProvider: _globalCart),

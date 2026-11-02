@@ -3,6 +3,7 @@
 // No depende del estado ni de los filtros activos en la búsqueda o catálogo.
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../widgets/safe_network_image.dart';
 import '../../data/models/article_model.dart';
 import '../../data/models/rating_model.dart';
@@ -320,7 +321,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final isWeb = MediaQuery.of(context).size.width > 800;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.marfil,
       appBar: StoreAppBar(
         cartProvider: widget.cartProvider,
         wishlistProvider: widget.wishlistProvider,
@@ -335,12 +336,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       floatingActionButton: _isAdmin
           ? FloatingActionButton.extended(
               onPressed: _navigateToEditArticle,
-              backgroundColor: const Color(0xFFBE185D),
-              foregroundColor: Colors.white,
-              icon: const Icon(Icons.edit_note_rounded),
-              label: const Text(
+              backgroundColor: AppColors.carbon,
+              foregroundColor: AppColors.blanco,
+              shape: const RoundedRectangleBorder(
+                borderRadius: AppRadius.borderMd,
+              ),
+              icon: const Icon(Icons.edit_note_rounded, size: 20),
+              label: Text(
                 'Editar Producto',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.2,
+                ),
               ),
             )
           : null,
@@ -417,11 +424,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // Contenedor principal de la ficha de producto
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.blanco,
+                  borderRadius: AppRadius.borderLg,
+                  border: Border.all(
+                    color: AppColors.arena.withValues(alpha: 0.7),
+                    width: 1.0,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: AppColors.carbon.withValues(alpha: 0.04),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -462,20 +473,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget _buildBackNavigation() {
     return InkWell(
       onTap: () => Navigator.pop(context),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.borderMd,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.arrow_back, size: 20, color: Colors.blue),
-            SizedBox(width: 6),
+          children: [
+            const Icon(Icons.arrow_back, size: 18, color: AppColors.carbon),
+            const SizedBox(width: 6),
             Text(
               'Volver al catálogo',
-              style: TextStyle(
-                color: Colors.blue,
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.carbon,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
+                fontSize: 13.5,
               ),
             ),
           ],
@@ -489,11 +500,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return Container(
         height: 380,
         decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.marfil,
+          borderRadius: AppRadius.borderMd,
+          border: Border.all(color: AppColors.arena),
         ),
         child: const Center(
-          child: Icon(Icons.image_not_supported, size: 64, color: Colors.grey),
+          child: Icon(Icons.image_not_supported, size: 64, color: AppColors.arena),
         ),
       );
     }
@@ -510,21 +522,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       children: [
         // Imagen principal grande con Badge de Descuento
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.borderMd,
           child: Stack(
             children: [
               Container(
                 height: 380,
                 width: double.infinity,
-                color: Colors.grey[50],
+                decoration: BoxDecoration(
+                  color: AppColors.blanco,
+                  border: Border.all(
+                    color: AppColors.arena.withValues(alpha: 0.6),
+                  ),
+                  borderRadius: AppRadius.borderMd,
+                ),
                 child: SafeNetworkImage(
                   imageUrl: currentImageUrl,
                   fit: BoxFit.contain,
                   placeholder: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.cobreOscuro,
+                    ),
                   ),
                   errorWidget: const Center(
-                    child: Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                    child: Icon(Icons.broken_image, size: 48, color: AppColors.arena),
                   ),
                 ),
               ),
@@ -535,25 +556,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.discountBadge,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                    decoration: const BoxDecoration(
+                      color: AppColors.cobreOscuro,
+                      borderRadius: AppRadius.borderSm,
                     ),
                     child: Text(
                       '-${_article!.discountPercentage}%',
-                      style: const TextStyle(
-                        fontFamily: 'DM Sans',
-                        color: Colors.white,
-                        fontSize: 13,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.blanco,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: -0.2,
+                        letterSpacing: 0.2,
                       ),
                     ),
                   ),
@@ -580,15 +593,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     });
                   },
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: AppTransitions.duration,
+                    curve: AppTransitions.curve,
                     width: 72,
                     height: 72,
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.blanco,
+                      borderRadius: AppRadius.borderMd,
                       border: Border.all(
-                        color: isSelected ? Colors.blue : Colors.grey[300]!,
-                        width: isSelected ? 2.5 : 1.0,
+                        color: isSelected ? AppColors.cobreOscuro : AppColors.arena,
+                        width: isSelected ? 2.0 : 1.0,
                       ),
                     ),
                     child: ClipRRect(
@@ -637,15 +651,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.marfil,
+                  borderRadius: AppRadius.borderPill,
+                  border: Border.all(
+                    color: AppColors.champagne.withValues(alpha: 0.8),
+                    width: 1.0,
+                  ),
                 ),
                 child: Text(
-                  article.category!,
-                  style: const TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                  article.category!.toUpperCase(),
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.carbon,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 10.5,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -653,16 +672,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: hasStock
-                    ? Colors.green.withValues(alpha: 0.1)
-                    : Colors.red.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
+                    ? AppColors.successBg
+                    : AppColors.errorBg,
+                borderRadius: AppRadius.borderPill,
+                border: Border.all(
+                  color: hasStock
+                      ? AppColors.success.withValues(alpha: 0.3)
+                      : AppColors.error.withValues(alpha: 0.3),
+                  width: 1.0,
+                ),
               ),
               child: Text(
                 hasStock ? 'En Stock (${article.stock} disp.)' : 'Agotado',
-                style: TextStyle(
-                  color: hasStock ? Colors.green[800] : Colors.red[800],
+                style: GoogleFonts.plusJakartaSans(
+                  color: hasStock ? AppColors.success : AppColors.error,
                   fontWeight: FontWeight.w600,
-                  fontSize: 12,
+                  fontSize: 11,
                 ),
               ),
             ),
@@ -670,15 +695,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.warningBg,
+                  borderRadius: AppRadius.borderPill,
+                  border: Border.all(
+                    color: AppColors.warning.withValues(alpha: 0.4),
+                  ),
                 ),
-                child: const Text(
+                child: Text(
                   'Pausado (Oculto)',
-                  style: TextStyle(
-                    color: Colors.deepOrange,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.warning,
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                    fontSize: 11,
                   ),
                 ),
               ),
@@ -688,25 +716,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 icon: const Icon(Icons.edit_note_rounded, size: 16),
                 label: const Text('Editar Producto'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.neutral900,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.carbon,
+                  foregroundColor: AppColors.blanco,
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
                   elevation: 0,
-                  textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  textStyle: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
         // Nombre del Producto
         Text(
           article.name,
-          style: const TextStyle(
-            fontSize: 26,
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.carbon,
             height: 1.2,
           ),
         ),
@@ -721,41 +749,38 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             if (article.hasDiscount) ...[
               Text(
                 ArticleModel.formatPrice(article.originalPrice!),
-                style: const TextStyle(
-                  fontFamily: 'DM Sans',
-                  fontSize: 20,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.neutral400,
+                  color: AppColors.grisCalido,
                   decoration: TextDecoration.lineThrough,
-                  decorationColor: AppColors.neutral400,
+                  decorationColor: AppColors.grisCalido,
                   decorationThickness: 1.8,
                 ),
               ),
             ],
             Text(
               ArticleModel.formatPrice(article.price),
-              style: const TextStyle(
-                fontFamily: 'DM Sans',
+              style: GoogleFonts.playfairDisplay(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: AppColors.neutral900,
+                color: AppColors.carbon,
               ),
             ),
             if (article.hasDiscount)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.discountBadge,
-                  borderRadius: BorderRadius.circular(6),
+                decoration: const BoxDecoration(
+                  color: AppColors.cobreOscuro,
+                  borderRadius: AppRadius.borderSm,
                 ),
                 child: Text(
                   '-${article.discountPercentage}%',
-                  style: const TextStyle(
-                    fontFamily: 'DM Sans',
-                    color: Colors.white,
-                    fontSize: 14,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.blanco,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: -0.2,
+                    letterSpacing: 0.2,
                   ),
                 ),
               ),
@@ -771,12 +796,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         const SizedBox(height: 20),
 
         // Descripción
-        const Text(
+        Text(
           'Descripción del producto',
-          style: TextStyle(
-            fontSize: 16,
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 17,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.carbon,
           ),
         ),
         const SizedBox(height: 8),
@@ -784,10 +809,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           (article.description != null && article.description!.trim().isNotEmpty)
               ? article.description!
               : 'Este producto no cuenta con una descripción detallada en este momento.',
-          style: TextStyle(
-            fontSize: 14,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 13.5,
             height: 1.6,
-            color: Colors.grey[700],
+            color: AppColors.grisCalido,
           ),
         ),
         const SizedBox(height: 28),
@@ -799,37 +824,39 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (hasStock) ...[
           Row(
             children: [
-              const Text(
+              Text(
                 'Cantidad:',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.carbon),
               ),
               const SizedBox(width: 16),
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.arena),
+                  borderRadius: AppRadius.borderMd,
+                  color: AppColors.blanco,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove, size: 18),
+                      icon: const Icon(Icons.remove, size: 16, color: AppColors.carbon),
                       onPressed: _quantity > 1
                           ? () => setState(() => _quantity--)
                           : null,
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Text(
                         '$_quantity',
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.carbon,
                         ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, size: 18),
+                      icon: const Icon(Icons.add, size: 16, color: AppColors.carbon),
                       onPressed: _quantity < article.stock
                           ? () => setState(() => _quantity++)
                           : null,
@@ -840,11 +867,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               const SizedBox(width: 16),
               Text(
                 'Total: ${ArticleModel.formatPrice(article.price * _quantity)}',
-                style: const TextStyle(
-                  fontFamily: 'DM Sans',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.neutral900,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.carbon,
                 ),
               ),
             ],
@@ -863,27 +889,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: AppColors.blanco,
                           ),
                         )
-                      : const Icon(Icons.add_shopping_cart, size: 20),
+                      : const Icon(Icons.add_shopping_cart, size: 18),
                   label: Text(
                     _isAddingToCart
                         ? 'Verificando inventario...'
                         : 'Añadir al Carrito',
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14.5,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 0.3,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(0, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    backgroundColor: AppColors.carbon,
+                    foregroundColor: AppColors.blanco,
+                    minimumSize: const Size(0, 48),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.borderMd,
                     ),
-                    elevation: 1,
+                    elevation: 0,
                   ),
                 ),
               ),
@@ -897,19 +924,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.red[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red[200]!),
+              color: AppColors.errorBg,
+              borderRadius: AppRadius.borderMd,
+              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.red[700]),
+                const Icon(Icons.info_outline, color: AppColors.error),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Este artículo se encuentra actualmente agotado o no disponible.',
-                    style: TextStyle(
-                      color: Colors.red[900],
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.error,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -936,34 +963,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // ──────────────────────────────────────────
   Widget _buildWishlistButton() {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 54,
-      height: 54,
+      duration: AppTransitions.duration,
+      curve: AppTransitions.curve,
+      width: 50,
+      height: 48,
       decoration: BoxDecoration(
         color: _isInWishlist
-            ? const Color(0xFFFDF2F8)
-            : Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+            ? AppColors.marfil
+            : AppColors.blanco,
+        borderRadius: AppRadius.borderMd,
         border: Border.all(
           color: _isInWishlist
-              ? const Color(0xFFBE185D).withValues(alpha: 0.5)
-              : Colors.grey[300]!,
-          width: 1.5,
+              ? AppColors.cobreOscuro
+              : AppColors.arena,
+          width: 1.2,
         ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: _isTogglingWishlist ? null : _handleWishlistToggle,
-          borderRadius: BorderRadius.circular(11),
+          borderRadius: AppRadius.borderMd,
           child: Center(
             child: _isTogglingWishlist
                 ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 18,
+                    height: 18,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Color(0xFFBE185D),
+                      color: AppColors.cobreOscuro,
                     ),
                   )
                 : AnimatedSwitcher(
@@ -977,8 +1005,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ? Icons.favorite_rounded
                           : Icons.favorite_border_rounded,
                       key: ValueKey(_isInWishlist),
-                      color: const Color(0xFFBE185D),
-                      size: 24,
+                      color: AppColors.cobreOscuro,
+                      size: 22,
                     ),
                   ),
           ),
@@ -999,7 +1027,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text('Inicia sesión para guardar artículos en tu lista de deseos'),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.carbon,
         ),
       );
       navigator.pushNamed('/login');
@@ -1022,12 +1050,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ? '${_article!.name} añadido a tu lista de deseos ♥'
                   : '${_article!.name} eliminado de tu lista de deseos',
             ),
-            backgroundColor:
-                wasAdded ? const Color(0xFFBE185D) : Colors.grey[700],
+            backgroundColor: AppColors.carbon,
             action: wasAdded
                 ? SnackBarAction(
                     label: 'Ver Wishlist',
-                    textColor: Colors.white,
+                    textColor: AppColors.blanco,
                     onPressed: () => navigator.pushNamed('/wishlist'),
                   )
                 : null,
@@ -1040,7 +1067,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -1054,9 +1081,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (article.ratingCount == 0) {
       return Row(
         children: [
-          ...List.generate(5, (i) => Icon(Icons.star_border_rounded, size: 18, color: Colors.grey[400])),
+          ...List.generate(5, (i) => const Icon(Icons.star_border_rounded, size: 18, color: AppColors.arena)),
           const SizedBox(width: 8),
-          Text('Sin calificaciones aún', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+          Text(
+            'Sin calificaciones aún',
+            style: GoogleFonts.plusJakartaSans(color: AppColors.grisCalido, fontSize: 12.5),
+          ),
         ],
       );
     }
@@ -1064,17 +1094,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       children: [
         ...List.generate(5, (i) {
           if (i < article.ratingAvg.floor()) {
-            return const Icon(Icons.star_rounded, size: 20, color: Colors.amber);
+            return const Icon(Icons.star_rounded, size: 19, color: AppColors.champagne);
           } else if (i < article.ratingAvg) {
-            return const Icon(Icons.star_half_rounded, size: 20, color: Colors.amber);
+            return const Icon(Icons.star_half_rounded, size: 19, color: AppColors.champagne);
           } else {
-            return Icon(Icons.star_border_rounded, size: 20, color: Colors.grey[400]);
+            return const Icon(Icons.star_border_rounded, size: 19, color: AppColors.arena);
           }
         }),
         const SizedBox(width: 8),
         Text(
           '${article.ratingAvg.toStringAsFixed(1)} (${article.ratingCount} reseña${article.ratingCount == 1 ? '' : 's'})',
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.carbon,
+          ),
         ),
       ],
     );
@@ -1087,9 +1121,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Calificaciones y Reseñas',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+        Text(
+          'Opiniones y Reseñas',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.carbon,
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -1111,30 +1149,41 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.15)),
+        color: AppColors.marfil,
+        borderRadius: AppRadius.borderMd,
+        border: Border.all(color: AppColors.arena.withValues(alpha: 0.8)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             isUpdate ? 'Actualizar tu reseña' : 'Califica este producto',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: AppColors.carbon,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             isUpdate
                 ? 'Puedes modificar tu puntuación y comentario.'
-                : 'Tu opinión ayuda a otros compradores.',
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                : 'Tu opinión ayuda a otros compradores a tomar una mejor decisión.',
+            style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: AppColors.grisCalido),
           ),
           const SizedBox(height: 16),
 
           // Selector interactivo de estrellas
           Row(
             children: [
-              const Text('Puntuación: ', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                'Puntuación: ',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: AppColors.carbon,
+                ),
+              ),
               const SizedBox(width: 8),
               ...List.generate(5, (i) {
                 final starIndex = i + 1;
@@ -1144,8 +1193,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Icon(
                       starIndex <= _selectedStars ? Icons.star_rounded : Icons.star_border_rounded,
-                      size: 32,
-                      color: starIndex <= _selectedStars ? Colors.amber : Colors.grey[400],
+                      size: 30,
+                      color: starIndex <= _selectedStars ? AppColors.champagne : AppColors.arena,
                     ),
                   ),
                 );
@@ -1154,9 +1203,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               if (_selectedStars > 0)
                 Text(
                   ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente'][_selectedStars],
-                  style: TextStyle(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
-                    color: Colors.amber[800],
+                    color: AppColors.cobreOscuro,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1172,9 +1221,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             decoration: InputDecoration(
               labelText: 'Tu opinión (opcional)',
               hintText: '¿Qué te pareció este producto?',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              border: OutlineInputBorder(
+                borderRadius: AppRadius.borderMd,
+                borderSide: const BorderSide(color: AppColors.arena),
+              ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: AppColors.blanco,
             ),
           ),
           const SizedBox(height: 16),
@@ -1188,22 +1240,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ? const SizedBox(
                       width: 18,
                       height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.blanco),
                     )
-                  : const Icon(Icons.send_rounded, size: 20),
+                  : const Icon(Icons.send_rounded, size: 18),
               label: Text(
                 _isSubmittingRating
                     ? 'Publicando...'
                     : isUpdate
                         ? 'Actualizar Reseña'
                         : 'Publicar Reseña',
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                backgroundColor: AppColors.carbon,
+                foregroundColor: AppColors.blanco,
+                minimumSize: const Size(double.infinity, 46),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
                 elevation: 0,
               ),
             ),
@@ -1217,23 +1269,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
+        color: AppColors.marfil,
+        borderRadius: AppRadius.borderMd,
+        border: Border.all(color: AppColors.arena),
       ),
       child: Row(
         children: [
-          Icon(Icons.lock_outline, color: Colors.grey[600]),
+          const Icon(Icons.lock_outline, color: AppColors.grisCalido),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'Inicia sesión para calificar este producto y compartir tu opinión.',
-              style: TextStyle(color: Colors.grey[700], fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(color: AppColors.carbon, fontSize: 13.5),
             ),
           ),
           const SizedBox(width: 12),
           TextButton(
             onPressed: () => Navigator.pushNamed(context, '/login'),
+            style: TextButton.styleFrom(foregroundColor: AppColors.cobreOscuro),
             child: const Text('Iniciar sesión', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
@@ -1246,14 +1299,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 32),
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.cobreOscuro),
         ),
       );
     }
     if (_ratingsError != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Text(_ratingsError!, style: const TextStyle(color: Colors.redAccent)),
+        child: Text(_ratingsError!, style: const TextStyle(color: AppColors.error)),
       );
     }
     if (_ratings.isEmpty) {
@@ -1262,11 +1315,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Column(
           children: [
-            Icon(Icons.rate_review_outlined, size: 48, color: Colors.grey[400]),
+            const Icon(Icons.rate_review_outlined, size: 44, color: AppColors.arena),
             const SizedBox(height: 12),
             Text(
               'Sé el primero en reseñar este producto',
-              style: TextStyle(color: Colors.grey[500], fontSize: 15),
+              style: GoogleFonts.plusJakartaSans(color: AppColors.grisCalido, fontSize: 14),
             ),
           ],
         ),
@@ -1283,10 +1336,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isOwn ? Colors.blue.withValues(alpha: 0.04) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: isOwn ? AppColors.marfil : AppColors.blanco,
+        borderRadius: AppRadius.borderMd,
         border: Border.all(
-          color: isOwn ? Colors.blue.withValues(alpha: 0.2) : Colors.grey[200]!,
+          color: isOwn ? AppColors.champagne : AppColors.arena.withValues(alpha: 0.6),
         ),
       ),
       child: Column(
@@ -1296,13 +1349,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Colors.blue.withValues(alpha: 0.15),
+                backgroundColor: AppColors.marfil,
                 child: Text(
                   rating.username[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.blue,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.carbon,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -1315,19 +1368,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       children: [
                         Text(
                           rating.username,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.5,
+                            color: AppColors.carbon,
+                          ),
                         ),
                         if (isOwn) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(20),
+                              color: AppColors.cobreOscuro.withValues(alpha: 0.1),
+                              borderRadius: AppRadius.borderPill,
                             ),
-                            child: const Text(
+                            child: Text(
                               'Tu reseña',
-                              style: TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.w600),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 9.5,
+                                color: AppColors.cobreOscuro,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -1335,7 +1396,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     Text(
                       _formatDate(rating.updatedAt ?? rating.createdAt),
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppColors.grisCalido),
                     ),
                   ],
                 ),
@@ -1345,7 +1406,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: List.generate(5, (i) => Icon(
                   i < rating.rating ? Icons.star_rounded : Icons.star_border_rounded,
                   size: 16,
-                  color: Colors.amber,
+                  color: AppColors.champagne,
                 )),
               ),
             ],
@@ -1354,7 +1415,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(height: 10),
             Text(
               rating.comment!,
-              style: TextStyle(fontSize: 14, color: Colors.grey[800], height: 1.5),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13.5,
+                color: AppColors.carbon,
+                height: 1.5,
+              ),
             ),
           ],
         ],

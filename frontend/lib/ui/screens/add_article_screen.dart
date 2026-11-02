@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'image_picker_helper.dart';
+import '../theme/app_colors.dart';
 
 class AddArticleScreen extends StatefulWidget {
   const AddArticleScreen({super.key});
@@ -231,10 +233,14 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
     final bool isWide = MediaQuery.of(context).size.width > 800;
 
     return Scaffold(
+      backgroundColor: AppColors.marfil,
       appBar: AppBar(
-        title: const Text('Agregar Nuevo Producto - Relaxbell', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFFBE185D),
-        foregroundColor: Colors.white,
+        title: Text(
+          'Agregar Nuevo Producto - Relaxbell',
+          style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        backgroundColor: AppColors.carbon,
+        foregroundColor: AppColors.blanco,
         elevation: 0,
       ),
       body: Stack(
@@ -245,11 +251,12 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 800),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.blanco,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.arena),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: Colors.black.withValues(alpha: 0.04),
                       spreadRadius: 2,
                       blurRadius: 10,
                       offset: const Offset(0, 4),
@@ -262,9 +269,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Detalles del Producto',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                        style: GoogleFonts.playfairDisplay(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.carbon),
                       ),
                       const SizedBox(height: 24),
                       // Name
@@ -555,9 +562,9 @@ class _AddArticleScreenState extends State<AddArticleScreen> {
                         onPressed: _isSaving ? null : _saveArticle,
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          backgroundColor: AppColors.carbon,
+                          foregroundColor: AppColors.blanco,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                           elevation: 0,
                         ),
                         child: const Text('Guardar Artículo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),

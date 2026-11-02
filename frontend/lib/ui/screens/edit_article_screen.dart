@@ -4,6 +4,7 @@
 // y agregar/remover imágenes en la misma carpeta creada para el producto.
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../data/models/article_model.dart';
@@ -338,13 +339,14 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
     final double basePrice = double.tryParse(_basePriceController.text.trim()) ?? 0.0;
 
     return Scaffold(
+      backgroundColor: AppColors.marfil,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Editar Artículo',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        backgroundColor: const Color(0xFFBE185D),
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.carbon,
+        foregroundColor: AppColors.blanco,
         elevation: 0,
         actions: [
           IconButton(
@@ -362,11 +364,12 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 860),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.blanco,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.arena),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
+                      color: Colors.black.withValues(alpha: 0.05),
                       spreadRadius: 2,
                       blurRadius: 14,
                       offset: const Offset(0, 4),
@@ -385,23 +388,23 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFBE185D).withValues(alpha: 0.1),
+                              color: AppColors.champagne.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(Icons.edit_note, color: Color(0xFFBE185D), size: 28),
+                            child: const Icon(Icons.edit_note, color: AppColors.cobreOscuro, size: 28),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Modificar Producto',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  style: GoogleFonts.playfairDisplay(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.carbon),
                                 ),
                                 Text(
                                   'ID: #${widget.article.id} · Solo visible para Administradores',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                  style: const TextStyle(fontSize: 12, color: AppColors.grisCalido),
                                 ),
                               ],
                             ),
@@ -720,7 +723,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                                 const SizedBox(height: 2),
                                 Text(
                                   'Carpeta del producto: $_detectedFolder',
-                                  style: const TextStyle(fontSize: 11, color: Color(0xFFBE185D), fontWeight: FontWeight.w500),
+                                  style: const TextStyle(fontSize: 11, color: AppColors.cobreOscuro, fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ],
@@ -730,9 +733,9 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                             icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
                             label: const Text('Agregar Fotos'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2563EB),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              backgroundColor: AppColors.carbon,
+                              foregroundColor: AppColors.blanco,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                             ),
                           ),
                         ],
@@ -743,7 +746,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                       if (_existingImages.isNotEmpty) ...[
                         const Text(
                           'Imágenes Actuales:',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black54),
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.carbon),
                         ),
                         const SizedBox(height: 10),
                         Wrap(
@@ -761,7 +764,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                      color: isPrimary ? const Color(0xFFBE185D) : Colors.grey[300]!,
+                                      color: isPrimary ? AppColors.cobreOscuro : AppColors.arena,
                                       width: isPrimary ? 2.5 : 1.0,
                                     ),
                                   ),
@@ -784,7 +787,7 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFBE185D),
+                                        color: AppColors.cobreOscuro,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: const Text(
@@ -928,10 +931,10 @@ class _EditArticleScreenState extends State<EditArticleScreen> {
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFBE185D),
-                              foregroundColor: Colors.white,
+                              backgroundColor: AppColors.carbon,
+                              foregroundColor: AppColors.blanco,
                               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                               elevation: 2,
                             ),
                           ),
