@@ -67,6 +67,29 @@ class AuthService {
     }
   }
 
+  /// Verifica si hay una sesión activa
+  Future<bool> isLoggedIn() async {
+    final token = await getToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  /// Recupera el nombre de usuario (sub) decodificando el token JWT guardado
+  Future<String?> getCurrentUsername() async {
+    String? token = await getToken();
+    if (token == null) return null;
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = parts[1];
+      final normalized = base64Url.normalize(payload);
+      final resp = utf8.decode(base64Url.decode(normalized));
+      final decoded = json.decode(resp) as Map<String, dynamic>;
+      return decoded['sub'] as String?;
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Borra el token (Cerrar Sesión)
   Future<void> logout() async {
     await _storage.delete(key: 'jwt_token');
@@ -77,8 +100,8 @@ class AuthService {
     required String password,
     required String email,
     required String address,
-    required String id_type,
-    required String doc_number,
+    required String idType,
+    required String docNumber,
   }) async {
     final String registerUrl = "http://localhost:8000/auth/register";
 
@@ -88,8 +111,8 @@ class AuthService {
         'password': password,
         'email': email,
         'address': address,
-        'id_type': id_type,
-        'doc_number': doc_number,
+        'id_type': idType,
+        'doc_number': docNumber,
       };
 
       final response = await _dio.post(

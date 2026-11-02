@@ -1,18 +1,25 @@
 // lib/ui/screens/catalog_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../data/models/article_model.dart';
 import '../../data/services/catalog_service.dart';
 import '../../data/services/auth_service.dart';
 import '../../data/services/cart_provider.dart';
+import '../../data/services/wishlist_provider.dart';
 
-// NUESTROS TRES COMPONENTES REUTILIZABLES
+import '../theme/app_colors.dart';
 import '../widgets/category_sidebar.dart';
 import '../widgets/product_card.dart';
-import '../widgets/store_app_bar.dart'; // <-- Importamos el nuevo AppBar
+import '../widgets/store_app_bar.dart';
 
 class CatalogScreen extends StatefulWidget {
   final CartProvider cartProvider;
-  const CatalogScreen({Key? key, required this.cartProvider}) : super(key: key);
+  final WishlistProvider wishlistProvider;
+  const CatalogScreen({
+    super.key,
+    required this.cartProvider,
+    required this.wishlistProvider,
+  });
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
@@ -29,7 +36,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   int _skip = 0;
-  static const int _limit = 12; // Carga de 12 en 12 productos
+  static const int _limit = 12;
   bool _isAdmin = false;
 
   @override
@@ -88,7 +95,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
           _hasMore = false;
         }
         
-        // Evitamos duplicados
         for (var article in newArticles) {
           if (!_articles.any((a) => a.id == article.id)) {
             _articles.add(article);
@@ -99,7 +105,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cargar catálogo: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al cargar catálogo: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -115,17 +124,15 @@ class _CatalogScreenState extends State<CatalogScreen> {
   Widget build(BuildContext context) {
     final bool isWeb = MediaQuery.of(context).size.width > 700;
 
-    // Filtramos localmente los artículos de acuerdo con la categoría seleccionada
     final filteredArticles = _selectedCategory == 'Todos'
         ? _articles
         : _articles.where((a) => a.category == _selectedCategory).toList();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      
-      // El AppBar resumido
+      backgroundColor: AppColors.marfil,
       appBar: StoreAppBar(
         cartProvider: widget.cartProvider,
+        wishlistProvider: widget.wishlistProvider,
         authService: _authService,
         isWeb: isWeb,
         onSessionChanged: () {
@@ -133,7 +140,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
           setState(() {});
         },
       ),
-
       body: Row(
         children: [
           if (isWeb)
@@ -141,8 +147,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
               selectedCategory: _selectedCategory,
               onCategorySelected: (category) {
                 setState(() => _selectedCategory = category);
-                // Si cambiamos de categoría y quedan pocos elementos visibles de esa categoría, 
-                // pero aún hay más productos en el servidor, cargamos la siguiente página automáticamente.
                 if (filteredArticles.length < 4 && _hasMore && !_isLoading) {
                   _loadMoreArticles();
                 }
@@ -150,14 +154,57 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
           Expanded(
             child: RefreshIndicator(
+              color: AppColors.cobreOscuro,
+              backgroundColor: AppColors.blanco,
               onRefresh: () => _loadMoreArticles(refresh: true),
               child: _articles.isEmpty && _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.cobreOscuro,
+                      ),
+                    )
                   : _articles.isEmpty
                       ? ListView(
-                          children: const [
-                            SizedBox(height: 100),
-                            Center(child: Text('No hay artículos disponibles.')),
+                          children: [
+                            const SizedBox(height: AppSpacing.space16),
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.blanco,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: AppColors.arena),
+                                    ),
+                                    child: const Icon(
+                                      Icons.spa_outlined,
+                                      size: 38,
+                                      color: AppColors.champagne,
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.space4),
+                                  Text(
+                                    'No hay artículos disponibles',
+                                    style: GoogleFonts.playfairDisplay(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.carbon,
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.space2),
+                                  Text(
+                                    'Vuelve a consultar más tarde.',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 13,
+                                      color: AppColors.grisCalido,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         )
                       : CustomScrollView(
@@ -165,17 +212,18 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           slivers: [
                             SliverPadding(
-                              padding: const EdgeInsets.all(24.0),
+                              padding: const EdgeInsets.all(AppSpacing.space6),
                               sliver: SliverGrid(
                                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 240,
-                                  childAspectRatio: 0.68,
-                                  crossAxisSpacing: 20,
-                                  mainAxisSpacing: 20,
+                                  maxCrossAxisExtent: 250,
+                                  childAspectRatio: 0.67,
+                                  crossAxisSpacing: AppSpacing.space4 + 4,
+                                  mainAxisSpacing: AppSpacing.space4 + 4,
                                 ),
                                 delegate: SliverChildBuilderDelegate(
                                   (context, index) {
                                     return ProductCard(
+                                      key: ValueKey('product_${filteredArticles[index].id}'),
                                       article: filteredArticles[index],
                                       cartProvider: widget.cartProvider,
                                       authService: _authService,
@@ -189,9 +237,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             if (_isLoading)
                               const SliverToBoxAdapter(
                                 child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 24.0),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: AppSpacing.space6,
+                                  ),
                                   child: Center(
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.cobreOscuro,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -208,10 +260,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   _loadMoreArticles(refresh: true);
                 });
               },
-              icon: const Icon(Icons.add),
-              label: const Text('Nuevo Artículo'),
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add, size: 20),
+              label: Text(
+                'Nuevo Artículo',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              backgroundColor: AppColors.cobreOscuro,
+              foregroundColor: AppColors.blanco,
+              shape: const RoundedRectangleBorder(
+                borderRadius: AppRadius.borderMd,
+              ),
             )
           : null,
     );

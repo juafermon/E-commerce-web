@@ -1,10 +1,15 @@
 // lib/ui/screens/register_screen.dart
+// Pantalla de Registro con estética de lujo Relaxbell:
+// Fondo Marfil, contenedor en Blanco con bordes Arena, títulos en Playfair Display y botón de acción en Carbón.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../data/services/auth_service.dart';
+import '../theme/app_colors.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -14,13 +19,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
 
-  // Controladores de texto
-  //final _fullNameController = TextEditingController();
   final _documentController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
-  ///final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
 
   String _selectedDocType = 'CC';
@@ -29,98 +31,157 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final List<String> _docTypes = ['CC', 'CE', 'NIT', 'Pasaporte'];
 
-  // Validación de Password (Mínimo una Mayúscula, una Minúscula y un Carácter Especial)
+  @override
+  void dispose() {
+    _documentController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    super.dispose();
+  }
+
   bool _validatePasswordStructure(String value) {
     String pattern = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#\$&*~]).{1,}$';
     RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(value);
   }
 
-  // Validación de Email estándar
   bool _validateEmailStructure(String value) {
     String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
     RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(value);
   }
 
-// Modifica únicamente la función '_handleRegister' dentro de '_RegisterScreenState'
-
   void _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     try {
-      // Invocación limpia vinculando los controladores al servicio actualizado
       bool success = await _authService.register(
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         email: _emailController.text.trim(),
         address: _addressController.text.trim(),
-        id_type: _selectedDocType,
-        doc_number: _documentController.text.trim(),
+        idType: _selectedDocType,
+        docNumber: _documentController.text.trim(),
       );
 
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Registro exitoso! Ya puedes iniciar sesión.'), backgroundColor: Colors.green),
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('¡Registro exitoso! Ya puedes iniciar sesión.'),
+            backgroundColor: AppColors.success,
+          ),
         );
-        Navigator.pushReplacementNamed(context, '/login');
+        navigator.pushReplacementNamed('/login');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceAll('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registro de Usuario')),
+      backgroundColor: AppColors.marfil,
+      appBar: AppBar(
+        title: Text(
+          'Registro',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.bold,
+            color: AppColors.carbon,
+            fontSize: 20,
+          ),
+        ),
+        backgroundColor: AppColors.blanco,
+        foregroundColor: AppColors.carbon,
+        elevation: 0,
+        shape: Border(
+          bottom: BorderSide(
+            color: AppColors.arena.withValues(alpha: 0.7),
+            width: 1,
+          ),
+        ),
+      ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space6,
+            vertical: AppSpacing.space8,
+          ),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 500), // Centrado y responsivo en web
+            constraints: const BoxConstraints(maxWidth: 520),
+            padding: const EdgeInsets.all(AppSpacing.space8),
+            decoration: BoxDecoration(
+              color: AppColors.blanco,
+              borderRadius: AppRadius.borderMd,
+              border: Border.all(
+                color: AppColors.arena.withValues(alpha: 0.7),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.carbon.withValues(alpha: 0.04),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     'Crea tu Cuenta',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.carbon,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 24),
-
-                 /* // 1. Nombre Completo
-                  TextFormField(
-                    controller: _fullNameController,
-                    maxLength: 100,
-                    decoration: const InputDecoration(
-                      labelText: 'Nombre Completo',
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(),
+                  const SizedBox(height: AppSpacing.space1),
+                  Text(
+                    'Únete a la experiencia de cuidado personal Relaxbell',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      color: AppColors.grisCalido,
                     ),
-                    validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),*/
+                  const SizedBox(height: AppSpacing.space6),
 
-                  // 2. Tipo de Documento e Identificación (En fila)
+                  // Tipo de Documento e Identificación
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         flex: 2,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedDocType,
-                          decoration: const InputDecoration(
+                          initialValue: _selectedDocType,
+                          decoration: InputDecoration(
                             labelText: 'Tipo',
-                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: AppColors.marfil,
+                            border: OutlineInputBorder(
+                              borderRadius: AppRadius.borderMd,
+                              borderSide: const BorderSide(color: AppColors.arena),
+                            ),
                           ),
                           items: _docTypes.map((String type) {
                             return DropdownMenuItem(value: type, child: Text(type));
@@ -128,18 +189,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onChanged: (value) => setState(() => _selectedDocType = value!),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.space3),
                       Expanded(
                         flex: 3,
                         child: TextFormField(
                           controller: _documentController,
                           maxLength: 15,
                           keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Solo números
-                          decoration: const InputDecoration(
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: InputDecoration(
                             labelText: 'Documento',
-                            border: OutlineInputBorder(),
-                            counterText: "", // Oculta contador por estética en fila
+                            counterText: "",
+                            filled: true,
+                            fillColor: AppColors.marfil,
+                            border: OutlineInputBorder(
+                              borderRadius: AppRadius.borderMd,
+                              borderSide: const BorderSide(color: AppColors.arena),
+                            ),
                           ),
                           validator: (v) {
                             if (v!.isEmpty) return 'Requerido';
@@ -150,32 +216,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.space4),
 
-                  // 3. Usuario (Username)
+                  // Usuario
                   TextFormField(
                     controller: _usernameController,
                     maxLength: 15,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Nombre de Usuario',
-                      prefixIcon: Icon(Icons.account_circle_outlined),
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.account_circle_outlined, color: AppColors.grisCalido),
+                      filled: true,
+                      fillColor: AppColors.marfil,
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.borderMd,
+                        borderSide: const BorderSide(color: AppColors.arena),
+                      ),
                     ),
                     validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.space4),
 
-                  // 4. Password con validaciones avanzadas solicitadas
+                  // Contraseña
                   TextFormField(
                     controller: _passwordController,
                     maxLength: 20,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock_outline, color: AppColors.grisCalido),
+                      filled: true,
+                      fillColor: AppColors.marfil,
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.borderMd,
+                        borderSide: const BorderSide(color: AppColors.arena),
+                      ),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          color: AppColors.grisCalido,
+                        ),
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
@@ -188,17 +267,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.space4),
 
-                  // 5. Email con Validación
+                  // Email
                   TextFormField(
                     controller: _emailController,
                     maxLength: 30,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Correo Electrónico',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.email_outlined, color: AppColors.grisCalido),
+                      filled: true,
+                      fillColor: AppColors.marfil,
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.borderMd,
+                        borderSide: const BorderSide(color: AppColors.arena),
+                      ),
                     ),
                     validator: (v) {
                       if (v!.isEmpty) return 'Campo requerido';
@@ -206,48 +290,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.space4),
 
-                  // 6. Celular (Sólo números)
-                 /* TextFormField(
-                    controller: _phoneController,
-                    maxLength: 15,
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Celular',
-                      prefixIcon: Icon(Icons.phone_android),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
-                  ),
-                  const SizedBox(height: 16),*/
-
-                  // 7. Dirección
+                  // Dirección
                   TextFormField(
                     controller: _addressController,
                     maxLength: 100,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Dirección de Envío',
-                      prefixIcon: Icon(Icons.home_outlined),
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.home_outlined, color: AppColors.grisCalido),
+                      filled: true,
+                      fillColor: AppColors.marfil,
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.borderMd,
+                        borderSide: const BorderSide(color: AppColors.arena),
+                      ),
                     ),
                     validator: (v) => v!.isEmpty ? 'Campo requerido' : null,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.space6),
 
-                  // Botón de Enviar Formulario
+                  // Botón de Enviar
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleRegister,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: AppColors.carbon,
+                      foregroundColor: AppColors.blanco,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: AppRadius.borderMd,
+                      ),
+                      elevation: 0,
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Registrarme', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: AppColors.blanco,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'Registrarme',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
                   ),
                 ],
               ),

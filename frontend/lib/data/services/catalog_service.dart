@@ -69,4 +69,53 @@ class CatalogService {
       throw Exception("Error de conexión: $e");
     }
   }
+
+  Future<ArticleModel> updateArticle({
+    required int articleId,
+    required Map<String, dynamic> payload,
+    required String token,
+  }) async {
+    try {
+      final response = await _dio.put(
+        '$_baseUrl$articleId',
+        data: payload,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        clearCache();
+        return ArticleModel.fromJson(response.data);
+      } else {
+        throw Exception("Error al actualizar el artículo.");
+      }
+    } on DioException catch (e) {
+      String msg = 'Error al actualizar el artículo';
+      if (e.response?.data != null && e.response?.data['detail'] != null) {
+        msg = e.response!.data['detail'].toString();
+      }
+      throw Exception(msg);
+    }
+  }
+
+  Future<void> deleteImages(List<String> imageUrls, String token) async {
+    if (imageUrls.isEmpty) return;
+    try {
+      await _dio.post(
+        '${_baseUrl}delete-images',
+        data: {'image_urls': imageUrls},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+    } catch (_) {
+      // Best-effort cleanup
+    }
+  }
 }

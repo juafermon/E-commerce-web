@@ -1,30 +1,68 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:frontend/main.dart';
+import 'package:frontend/data/models/article_model.dart';
+import 'package:frontend/data/services/cart_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('CartProvider Tests', () {
+    late CartProvider cart;
+    final testArticle = ArticleModel(
+      id: 1,
+      name: 'Camiseta de Prueba',
+      description: 'Descripción de prueba',
+      price: 50.0,
+      stock: 10,
+      isAvailable: true,
+      category: 'Ropa',
+      imageUrls: [],
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    setUp(() {
+      cart = CartProvider();
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('El carrito inicia vacío', () {
+      expect(cart.items, isEmpty);
+      expect(cart.itemCount, 0);
+      expect(cart.totalAmount, 0.0);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('Agregar artículo incrementa la cantidad y el total', () {
+      cart.addArticle(testArticle);
+
+      expect(cart.items.length, 1);
+      expect(cart.itemCount, 1);
+      expect(cart.totalAmount, 50.0);
+
+      // Agregar de nuevo debe incrementar la cantidad
+      cart.addArticle(testArticle);
+      expect(cart.itemCount, 2);
+      expect(cart.totalAmount, 100.0);
+    });
+
+    test('setItemQuantity modifica la cantidad y actualiza el total', () {
+      cart.addArticle(testArticle);
+      cart.setItemQuantity(testArticle.id, 5);
+
+      expect(cart.itemCount, 5);
+      expect(cart.totalAmount, 250.0);
+    });
+
+    test('removeItem elimina el artículo completamente', () {
+      cart.addArticle(testArticle);
+      expect(cart.items.length, 1);
+
+      cart.removeItem(testArticle.id);
+      expect(cart.items, isEmpty);
+      expect(cart.itemCount, 0);
+      expect(cart.totalAmount, 0.0);
+    });
+
+    test('clearCart vacía todos los artículos', () {
+      cart.addArticle(testArticle);
+      cart.clearCart();
+
+      expect(cart.items, isEmpty);
+      expect(cart.itemCount, 0);
+    });
   });
 }

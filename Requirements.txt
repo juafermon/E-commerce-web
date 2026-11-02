@@ -1,4 +1,3 @@
-pip install fastapi "uvicorn[standard]" psycopg2-binary "python-jose[cryptography]" bcrypt passlib python-dotenv python-multipart
 fastapi
 uvicorn[standard]
 psycopg2-binary
@@ -8,3 +7,36 @@ passlib
 python-dotenv
 python-multipart
 supabase
+
+
+"""
+
+Paleta de colores propuesta:
+Fondo General: Marfil #F7F4EF
+Superficies: Blanco #FFFFFF
+Texto y botones: Carbón #211F1C
+Acentos sutiles: Champagne #B49A78
+Acentos de acción: Cobre Oscuro #A46F4E
+Detalles decorativos: Arena #D7C7B7
+Texto secundario: Gris cálido #77716A 
+
+Tipografía: 
+Tipografía Secundaria (Títulos / Display): Playfair Display
+
+
+  /* Espaciado */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Acabados */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --transition: 200ms ease;
+
+"""
